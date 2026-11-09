@@ -22,3 +22,10 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Local environment and e2e auth state
+.env
+e2e/.auth/
+coverage
+playwright-report/
+test-results/

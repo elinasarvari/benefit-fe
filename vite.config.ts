@@ -1,7 +1,23 @@
+import tailwindcss from '@tailwindcss/vite'
 import react from '@vitejs/plugin-react'
-import { defineConfig } from 'vite'
+import { fileURLToPath } from 'node:url'
+import { defineConfig } from 'vitest/config'
 
-// https://vite.dev/config/
+const apiTarget = process.env.API_BASE_URL ?? 'http://localhost:8000'
+const proxy = { '/api': { target: apiTarget, changeOrigin: false } }
+
 export default defineConfig({
-  plugins: [react()],
+  plugins: [react(), tailwindcss()],
+  resolve: {
+    alias: { '@': fileURLToPath(new URL('./src', import.meta.url)) },
+  },
+  server: { proxy },
+  preview: { proxy },
+  test: {
+    environment: 'jsdom',
+    include: ['src/**/*.test.{ts,tsx}'],
+    setupFiles: ['src/test/setup.ts'],
+    env: { TZ: 'America/Chicago' },
+    globals: true,
+  },
 })

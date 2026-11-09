@@ -1,0 +1,64 @@
+name: nightly
+
+on:
+  schedule:
+    - cron: '17 5 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: nightly-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  e2e-all-browsers:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    env:
+      APP_ENV: test
+      LLM_MODE: fake
+      EMBEDDER: fake
+      RERANKER: fake
+      TRACING_ENABLED: 'false'
+      API_BASE_URL: http://localhost:8000
+      E2E_BASE_URL: http://localhost:5173
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          path: benefit-fe
+          persist-credentials: false
+      - name: Pick the benefit-be ref
+        id: sibling
+        run: echo "ref=$(bash benefit-fe/scripts/ci/resolve-sibling-ref.sh)" >> "$GITHUB_OUTPUT"
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          repository: ${{ github.repository_owner }}/benefit-be
+          ref: ${{ steps.sibling.outputs.ref }}
+          path: benefit-be
+          persist-credentials: false
+      - uses: ./benefit-fe/.github/actions/e2e-stack
+        with:
+          browsers: chromium firefox webkit
+      - name: Playwright (Chromium, Firefox, WebKit)
+        working-directory: benefit-fe
+        run: pnpm e2e:all
+      - name: Upload the Playwright report and traces
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: playwright-report-nightly
+          path: |
+            benefit-fe/playwright-report/
+            benefit-fe/test-results/
+          if-no-files-found: ignore
+          retention-days: 7
+      - name: Upload the stack log
+        if: ${{ failure() }}
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: stack-log-nightly
+          path: stack.log
+          if-no-files-found: ignore
+          retention-days: 7
