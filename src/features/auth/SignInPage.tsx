@@ -1,21 +1,22 @@
 import { useActionState } from 'react'
-import { useNavigate, useSearchParams } from 'react-router'
-import { useLogin } from '@/api/auth'
+import { Navigate, useNavigate, useSearchParams } from 'react-router'
+import { useLogin, useMe } from '@/api/auth'
 import { ErrorState } from '@/components/ErrorState'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { homePathFor } from '@/lib/roles'
+import { PageHeading } from '@/components/PageHeading'
 
 interface FormState {
   username: string
   error: unknown
 }
 
-const NOTICES: Partial<Record<string, string>> = {
-  expired: 'Your session has expired. Please sign in again.',
-  required: 'Please sign in to continue.',
-}
+const NOTICES = new Map([
+  ['expired', 'Your session has expired. Please sign in again.'],
+  ['required', 'Please sign in to continue.'],
+])
 
 function readText(formData: FormData, name: string): string {
   const value = formData.get(name)
@@ -26,7 +27,8 @@ export function SignInPage() {
   const [params] = useSearchParams()
   const navigate = useNavigate()
   const login = useLogin()
-  const notice = NOTICES[params.get('reason') ?? '']
+  const me = useMe()
+  const notice = NOTICES.get(params.get('reason') ?? '')
 
   const [state, submit, isPending] = useActionState(
     async (_previous: FormState, formData: FormData): Promise<FormState> => {
@@ -45,9 +47,13 @@ export function SignInPage() {
     { username: '', error: null },
   )
 
+  if (me.isSuccess) {
+    return <Navigate to={homePathFor(me.data.user.role)} replace />
+  }
+
   return (
     <section className="mx-auto max-w-sm space-y-4">
-      <h1 className="text-2xl font-semibold">Sign in</h1>
+      <PageHeading>Sign in</PageHeading>
       {notice ? (
         <p role="status" className="rounded-lg bg-muted p-3 text-sm">
           {notice}

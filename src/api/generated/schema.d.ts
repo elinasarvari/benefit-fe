@@ -356,13 +356,13 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
-            /** @description Successful Response */
+            /** @description ready or degraded */
             200: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": unknown;
+                    "application/json": components["schemas"]["ReadinessReport"];
                 };
             };
             /** @description not_ready */

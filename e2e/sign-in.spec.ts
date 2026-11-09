@@ -42,14 +42,10 @@ test.describe('signed out', () => {
     })
   }
 
-  test('FR-000-14: synthetic banner visible on the sign-in page and a missing page', async ({
-    page,
-  }) => {
+  test('FR-000-14: synthetic banner visible on the sign-in page', async ({ page }) => {
     const signIn = new SignInPage(page)
 
     await signIn.goto()
-    await expect(signIn.syntheticBanner).toBeVisible()
-    await page.goto('/no-such-page')
 
     await expect(signIn.syntheticBanner).toBeVisible()
   })
@@ -87,6 +83,17 @@ test.describe('signed in', () => {
       })
     })
   }
+
+  test.describe('caseworker on a missing page', () => {
+    test.use({ storageState: storageStatePath('caseworker') })
+
+    test('FR-000-14: synthetic banner visible on the not-found page', async ({ page }) => {
+      await page.goto('/no-such-page')
+
+      await expect(page.getByRole('heading', { name: /page not found/i })).toBeVisible()
+      await expect(new SignInPage(page).syntheticBanner).toBeVisible()
+    })
+  })
 
   test.describe('applicant', () => {
     test.use({ storageState: storageStatePath('applicant') })

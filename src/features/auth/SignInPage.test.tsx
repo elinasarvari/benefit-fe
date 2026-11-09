@@ -1,4 +1,4 @@
-import { screen } from '@testing-library/react'
+import { screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { describe, expect, it } from 'vitest'
 import type { components } from '@/api/generated/schema'
@@ -41,6 +41,39 @@ describe('SignInPage', () => {
     expect(router.state.location.pathname).toBe('/applicant')
   })
 
+  it('FR-000-21: uses the sign-in response as the session without calling /auth/me again', async () => {
+    let meCalls = 0
+    respondTo('GET /api/v1/auth/me', () => {
+      meCalls += 1
+      return errorResponse(401, 'auth.required', 'Sign in to continue.')
+    })
+    respondTo('POST /api/v1/auth/login', () => jsonResponse(sessionFor('caseworker')))
+    renderApp('/sign-in')
+    await screen.findByLabelText(/username/i)
+    await waitFor(() => {
+      expect(meCalls).toBe(1)
+    })
+
+    await signIn('caseworker1', 'not-a-real-password')
+
+    expect(await screen.findByRole('heading', { name: /caseworker console/i })).toBeInTheDocument()
+    expect(meCalls).toBe(1)
+  })
+
+  it.each([
+    ['caseworker', '/caseworker'],
+    ['applicant', '/applicant'],
+  ] as const)('FR-000-21: redirects a signed-in %s from /sign-in to %s', async (role, home) => {
+    signedInAs(role)
+
+    const { router } = renderApp('/sign-in')
+
+    await waitFor(() => {
+      expect(router.state.location.pathname).toBe(home)
+    })
+    expect(screen.queryByLabelText(/username/i)).not.toBeInTheDocument()
+  })
+
   it('FR-000-21: shows the error message and reference ID on invalid credentials', async () => {
     respondTo('POST /api/v1/auth/login', () =>
       errorResponse(401, 'auth.invalid_credentials', 'Invalid username or password.', 'ref-5678'),
@@ -67,6 +100,16 @@ describe('SignInPage', () => {
 
     expect(await screen.findByText(/sign in to continue/i)).toBeInTheDocument()
   })
+
+  it.each(['__proto__', 'constructor', 'toString', 'unknown'])(
+    'shows no notice and still renders the form when reason is %s',
+    async (reason) => {
+      renderApp(`/sign-in?reason=${reason}`)
+
+      expect(await screen.findByLabelText(/username/i)).toBeInTheDocument()
+      expect(screen.queryByRole('status')).not.toBeInTheDocument()
+    },
+  )
 
   it('shows no notice when there is no reason', async () => {
     renderApp('/sign-in')

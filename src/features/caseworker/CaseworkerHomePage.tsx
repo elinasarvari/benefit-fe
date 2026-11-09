@@ -1,7 +1,9 @@
+import { PageHeading } from '@/components/PageHeading'
+
 export function CaseworkerHomePage() {
   return (
     <section className="space-y-2">
-      <h1 className="text-2xl font-semibold">Caseworker console</h1>
+      <PageHeading>Caseworker console</PageHeading>
       <p>No cases to show yet.</p>
     </section>
   )

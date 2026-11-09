@@ -12,7 +12,7 @@ export function AppShell() {
   return (
     <div className="flex min-h-screen flex-col">
       <SyntheticBanner />
-      {me.data ? (
+      {me.isSuccess ? (
         <header className="flex items-center justify-end gap-3 border-b px-4 py-2 text-sm">
           <span>
             {me.data.user.display_name} ({me.data.user.role})

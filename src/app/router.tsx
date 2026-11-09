@@ -8,25 +8,28 @@ import { ForbiddenPage } from '@/features/errors/ForbiddenPage'
 import { AppShell } from './AppShell'
 import { RequireRole } from './RequireRole'
 
-export const routes: RouteObject[] = [
-  {
+export function shellRoute(children: RouteObject[]): RouteObject {
+  return {
     element: <AppShell />,
-    errorElement: <RouteErrorPage />,
-    children: [
-      { index: true, element: <Navigate to="/sign-in" replace /> },
-      { path: 'sign-in', element: <SignInPage /> },
-      { path: 'forbidden', element: <ForbiddenPage /> },
-      {
-        element: <RequireRole allow={['caseworker', 'supervisor']} />,
-        children: [{ path: 'caseworker', element: <CaseworkerHomePage /> }],
-      },
-      {
-        element: <RequireRole allow={['applicant']} />,
-        children: [{ path: 'applicant', element: <ApplicantHomePage /> }],
-      },
-      { path: '*', element: <NotFoundPage /> },
-    ],
-  },
+    children: [{ errorElement: <RouteErrorPage />, children }],
+  }
+}
+
+export const routes: RouteObject[] = [
+  shellRoute([
+    { index: true, element: <Navigate to="/sign-in" replace /> },
+    { path: 'sign-in', element: <SignInPage /> },
+    { path: 'forbidden', element: <ForbiddenPage /> },
+    {
+      element: <RequireRole allow={['caseworker', 'supervisor']} />,
+      children: [{ path: 'caseworker', element: <CaseworkerHomePage /> }],
+    },
+    {
+      element: <RequireRole allow={['applicant']} />,
+      children: [{ path: 'applicant', element: <ApplicantHomePage /> }],
+    },
+    { path: '*', element: <NotFoundPage /> },
+  ]),
 ]
 
 export function createAppRouter() {

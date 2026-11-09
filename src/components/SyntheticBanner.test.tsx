@@ -1,21 +1,42 @@
 import { screen, within } from '@testing-library/react'
 import { describe, expect, it } from 'vitest'
+import { signedInAs } from '@/test/fakeApi'
 import { renderApp } from '@/test/renderApp'
 
 describe('SyntheticBanner', () => {
   it.each([
-    ['/', 'the root'],
-    ['/sign-in', 'sign-in'],
-    ['/caseworker', 'the caseworker area'],
-    ['/applicant', 'the applicant area'],
-    ['/no-such-page', 'an unknown route'],
-  ])('FR-000-14: shows the SYNTHETIC banner on every route when visiting %s (%s)', async (path) => {
-    renderApp(path)
+    ['/', /sign in/i],
+    ['/sign-in', /sign in/i],
+  ])(
+    'FR-000-14: shows the SYNTHETIC banner when a signed-out visitor opens %s',
+    async (path, page) => {
+      renderApp(path)
 
-    const banner = await screen.findByRole('region', { name: /synthetic/i })
+      expect(await screen.findByRole('heading', { name: page })).toBeInTheDocument()
+      expect(await screen.findByRole('region', { name: /synthetic/i })).toHaveTextContent(
+        /synthetic/i,
+      )
+    },
+  )
 
-    expect(banner).toHaveTextContent(/synthetic/i)
-  })
+  it.each([
+    ['caseworker', '/caseworker', /caseworker console/i],
+    ['applicant', '/applicant', /applicant portal/i],
+    ['caseworker', '/no-such-page', /page not found/i],
+    ['applicant', '/forbidden', /access denied/i],
+  ] as const)(
+    'FR-000-14: shows the SYNTHETIC banner when a signed-in %s opens %s',
+    async (role, path, page) => {
+      signedInAs(role)
+
+      renderApp(path)
+
+      expect(await screen.findByRole('heading', { name: page })).toBeInTheDocument()
+      expect(await screen.findByRole('region', { name: /synthetic/i })).toHaveTextContent(
+        /synthetic/i,
+      )
+    },
+  )
 
   it('FR-000-14: cannot be dismissed when rendered', async () => {
     renderApp('/sign-in')

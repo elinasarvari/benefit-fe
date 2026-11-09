@@ -7,9 +7,13 @@ export type LoginRequest = components['schemas']['LoginRequest']
 
 export const meQueryKey = ['auth', 'me'] as const
 
+// A fresh sign-in response is trusted for this long; expiry still surfaces as a 401 from any call.
+const SESSION_STALE_MS = 30_000
+
 export function useMe() {
   return useQuery({
     queryKey: meQueryKey,
+    staleTime: SESSION_STALE_MS,
     queryFn: async (): Promise<SessionInfo> => {
       const { data } = await apiClient.GET('/api/v1/auth/me')
       if (!data) {
@@ -30,7 +34,9 @@ export function useLogin() {
       }
       return data
     },
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: meQueryKey }),
+    onSuccess: (session) => {
+      queryClient.setQueryData(meQueryKey, session)
+    },
   })
 }
 

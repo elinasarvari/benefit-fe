@@ -1,7 +1,7 @@
 import { screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { describe, expect, it } from 'vitest'
-import { respondTo, signedInAs } from '@/test/fakeApi'
+import { errorResponse, respondTo, signedInAs } from '@/test/fakeApi'
 import { renderApp } from '@/test/renderApp'
 
 describe('AppShell', () => {
@@ -13,11 +13,14 @@ describe('AppShell', () => {
     expect(screen.queryByRole('button', { name: /sign out/i })).not.toBeInTheDocument()
   })
 
-  it('signs out and returns to sign-in when the sign-out button is pressed', async () => {
+  it('FR-000-06: ends the session and returns to sign-in when the sign-out button is pressed', async () => {
     signedInAs('caseworker')
     let loggedOut = false
     respondTo('POST /api/v1/auth/logout', () => {
       loggedOut = true
+      respondTo('GET /api/v1/auth/me', () =>
+        errorResponse(401, 'auth.required', 'Sign in to continue.'),
+      )
       return new Response(null, { status: 204 })
     })
     const { router } = renderApp('/caseworker')

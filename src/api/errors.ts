@@ -31,6 +31,35 @@ function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null
 }
 
+// Typed as a Record so the compiler flags any ErrorCode added to the API but missing here.
+const KNOWN_CODES: Record<components['schemas']['ErrorCode'], true> = {
+  'auth.required': true,
+  'auth.session_expired': true,
+  'auth.invalid_credentials': true,
+  'auth.forbidden': true,
+  not_found: true,
+  conflict: true,
+  validation_failed: true,
+  internal_error: true,
+  dependency_unavailable: true,
+}
+
+function isKnownCode(value: unknown): value is components['schemas']['ErrorCode'] {
+  return typeof value === 'string' && Object.hasOwn(KNOWN_CODES, value)
+}
+
+function toFieldError(value: unknown): FieldError | null {
+  if (
+    isRecord(value) &&
+    typeof value.field === 'string' &&
+    typeof value.message === 'string' &&
+    typeof value.type === 'string'
+  ) {
+    return { field: value.field, message: value.message, type: value.type }
+  }
+  return null
+}
+
 export async function parseApiError(response: Response): Promise<ApiError> {
   const fallback: ApiErrorInit = {
     status: response.status,
@@ -49,12 +78,13 @@ export async function parseApiError(response: Response): Promise<ApiError> {
     return new ApiError(fallback)
   }
   const { code, message, fields, reference_id: referenceId } = body.error
-  const envelope = body as components['schemas']['ErrorEnvelope']
   return new ApiError({
     status: response.status,
-    code: typeof code === 'string' ? envelope.error.code : fallback.code,
+    code: isKnownCode(code) ? code : 'unknown',
     message: typeof message === 'string' ? message : fallback.message,
-    fields: Array.isArray(fields) ? envelope.error.fields : fallback.fields,
+    fields: Array.isArray(fields)
+      ? fields.map(toFieldError).filter((field) => field !== null)
+      : fallback.fields,
     referenceId: typeof referenceId === 'string' ? referenceId : fallback.referenceId,
   })
 }

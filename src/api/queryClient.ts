@@ -3,10 +3,10 @@ import { ApiError } from './errors'
 
 const MAX_RETRIES = 2
 
-const SIGN_IN_REDIRECTS: Partial<Record<string, string>> = {
-  'auth.session_expired': '/sign-in?reason=expired',
-  'auth.required': '/sign-in?reason=required',
-}
+const SIGN_IN_REDIRECTS = new Map([
+  ['auth.session_expired', '/sign-in?reason=expired'],
+  ['auth.required', '/sign-in?reason=required'],
+])
 
 function shouldRetry(failureCount: number, error: Error): boolean {
   if (error instanceof ApiError && error.status >= 400 && error.status < 500) {
@@ -32,7 +32,7 @@ export function createQueryClient({
 }: QueryClientOptions = {}): QueryClient {
   const handleUnauthorized = (error: Error): void => {
     if (error instanceof ApiError && error.status === 401) {
-      const destination = SIGN_IN_REDIRECTS[error.code]
+      const destination = SIGN_IN_REDIRECTS.get(error.code)
       if (destination) {
         navigate(destination)
       }
