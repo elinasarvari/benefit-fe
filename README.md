@@ -1,32 +1,31 @@
-# React + TypeScript + Vite
+# benefit-fe
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+React 19 + TypeScript (strict) + Vite single-page app. All data shown is synthetic.
 
-Currently, two official plugins are available:
+## Commands
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+Requires Node 24 and pnpm 11 (`corepack enable`).
 
-## React Compiler
+| Command                                              | Purpose                                                                                                                                                                                      |
+| ---------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `pnpm install --frozen-lockfile`                     | Install the pinned dependencies                                                                                                                                                              |
+| `pnpm dev`                                           | Dev server on :5173; `/api` is proxied to `API_BASE_URL` (default `http://localhost:8000`)                                                                                                   |
+| `pnpm lint` / `pnpm format:check` / `pnpm typecheck` | ESLint, Prettier and `tsc -b --noEmit`                                                                                                                                                       |
+| `pnpm test`                                          | Vitest (one run, `TZ=America/Chicago`)                                                                                                                                                       |
+| `pnpm build`                                         | Type-check and build to `dist/`                                                                                                                                                              |
+| `pnpm api:gen`                                       | Vendor `openapi/openapi.json` at the SHA in `openapi/BE_COMMIT` and regenerate `src/api/generated/schema.d.ts`. `BE_LOCAL=1 pnpm api:gen` reads `../benefit-be/openapi/openapi.json` instead |
+| `pnpm api:check`                                     | Run `api:gen` (also honours `BE_LOCAL=1`), then fail if `openapi/` or `src/api/generated/` differ from what is committed; says which side is stale                                           |
+| `pnpm e2e`                                           | Playwright on Chromium against the running stack (`make dev` in benefit-be, or `Procfile.ci`)                                                                                                |
+| `pnpm e2e:all`                                       | The same on Chromium, Firefox and WebKit (run nightly in CI)                                                                                                                                 |
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+Copy `.env.example` to `.env` for local settings. Never edit `src/api/generated/`.
 
-## Expanding the Oxlint configuration
+## End-to-end tests
 
-If you are developing a production application, we recommend enabling type-aware lint rules by installing `oxlint-tsgolint` and editing `.oxlintrc.json`:
+`e2e/` holds the Playwright suite (page objects in `e2e/pages/`, an axe accessibility fixture in `e2e/fixtures.ts`). It needs the backend stack running and the `E2E_*` settings from `.env.example`; `E2E_PASSWORD` must equal the backend `DEMO_PASSWORD`. Install a browser once with `pnpm exec playwright install chromium`. The six journey specs are marked `test.fixme` with a `pending` annotation until the feature that builds them lands.
 
-```json
-{
-  "$schema": "./node_modules/oxlint/configuration_schema.json",
-  "plugins": ["react", "typescript", "oxc"],
-  "options": {
-    "typeAware": true
-  },
-  "rules": {
-    "react/rules-of-hooks": "error",
-    "react/only-export-components": ["warn", { "allowConstantExport": true }]
-  }
-}
-```
+## CI
 
-See the [Oxlint rules documentation](https://oxc.rs/docs/guide/usage/linter/rules) for the full list of rules and categories.
+`.github/workflows/ci.yml` runs `static`, `unit`, `contract` and `e2e` on every pull request. The `e2e` job checks out benefit-be at the branch with the same name (otherwise `main`) using `scripts/ci/resolve-sibling-ref.sh`. `nightly.yml` runs all browsers. Every action is pinned by commit SHA.
+
+`openapi/BE_COMMIT` must hold a real benefit-be commit SHA. While it is the all-zero placeholder, run the unit tests with `ALLOW_PLACEHOLDER_BE_COMMIT=1 pnpm test`.
