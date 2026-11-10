@@ -4,7 +4,7 @@ on:
   pull_request:
   push:
     # Feature branches run CI on push too, so a branch can be checked before its PR exists.
-    branches: [main, "feature/**"]
+    branches: [main, 'feature/**']
 
 permissions:
   contents: read
