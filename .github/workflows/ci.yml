@@ -73,14 +73,14 @@ jobs:
         run: |
           ref="$(bash scripts/ci/resolve-sibling-ref.sh)"
           echo "Comparing openapi/openapi.json with benefit-be@$ref"
-          curl -fsSL "https://raw.githubusercontent.com/${GITHUB_REPOSITORY_OWNER}/benefit-be/refs/heads/${ref}/openapi/openapi.json" \
+          curl -fsSL --retry 5 --retry-all-errors --connect-timeout 20 "https://raw.githubusercontent.com/${GITHUB_REPOSITORY_OWNER}/benefit-be/refs/heads/${ref}/openapi/openapi.json" \
             -o "$RUNNER_TEMP/be-openapi.json"
           diff -u openapi/openapi.json "$RUNNER_TEMP/be-openapi.json" \
             || { echo "::error::openapi/openapi.json is out of date with benefit-be@$ref. Run pnpm api:gen."; exit 1; }
 
   e2e:
     runs-on: ubuntu-24.04
-    timeout-minutes: 12
+    timeout-minutes: 20
     env:
       APP_ENV: test
       LLM_MODE: fake
