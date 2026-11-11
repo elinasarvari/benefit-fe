@@ -907,7 +907,9 @@ export interface components {
         /**
          * Finding
          * @description One discrepancy (FR-002-03, FR-002-14, FR-002-24). `finding_id` is derived from the case,
-         *     cause, member and job, so running the check again gives the same ID (FR-002-23).
+         *     cause, member, job and document, so running the check again gives the same ID (FR-002-23)
+         *     and two "different person" stubs (no member, no job) still get different IDs.
+         *     `identity` is set for identity mismatches: `no_match` or `no_record` (FR-002-24).
          */
         Finding: {
             cause: components["schemas"]["FindingCause"];
@@ -928,6 +930,7 @@ export interface components {
              * Format: uuid
              */
             finding_id: string;
+            identity?: components["schemas"]["IdentityMatch"] | null;
             /** Job Id */
             job_id?: string | null;
             /** Member Id */
@@ -1009,6 +1012,11 @@ export interface components {
             /** Members */
             members: components["schemas"]["HouseholdMemberView"][];
         };
+        /**
+         * IdentityMatch
+         * @enum {string}
+         */
+        IdentityMatch: "match" | "no_match" | "no_record";
         /** IllinoisAddress */
         IllinoisAddress: {
             /** City */
