@@ -29,41 +29,63 @@ runs:
       shell: bash
       run: pnpm --dir benefit-fe install --frozen-lockfile
 
-    - name: Read the pinned Temporal CLI version
-      id: temporal
+    - name: Read the pinned MongoDB and Temporal CLI versions
+      id: versions
       shell: bash
       run: |
-        version="$(sed -n 's/^TEMPORAL_CLI_VERSION := //p' benefit-be/Makefile)"
-        test -n "$version"
-        echo "version=$version" >> "$GITHUB_OUTPUT"
+        temporal="$(sed -n 's/^TEMPORAL_CLI_VERSION := //p' benefit-be/Makefile)"
+        # benefit-be pins MONGO_VERSION; a benefit-be ref from before it did gets the same default
+        mongo="$(sed -n 's/^MONGO_VERSION := //p' benefit-be/Makefile)"
+        test -n "$temporal"
+        echo "temporal=$temporal" >> "$GITHUB_OUTPUT"
+        echo "mongo=${mongo:-8.0.38}" >> "$GITHUB_OUTPUT"
+
     - name: Cache the Temporal CLI
       id: temporal-cache
       uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
       with:
         path: ~/.local/temporal
-        key: temporal-cli-${{ steps.temporal.outputs.version }}-${{ runner.os }}-${{ runner.arch }}
+        key: temporal-cli-${{ steps.versions.outputs.temporal }}-${{ runner.os }}-${{ runner.arch }}
     - name: Install the Temporal CLI
       if: steps.temporal-cache.outputs.cache-hit != 'true'
       shell: bash
+      env:
+        VERSION: ${{ steps.versions.outputs.temporal }}
       run: |
+        curl -fsSL --retry 5 --retry-all-errors --connect-timeout 20 -o "$RUNNER_TEMP/temporal.tgz" \
+          "https://github.com/temporalio/cli/releases/download/v${VERSION}/temporal_cli_${VERSION}_linux_amd64.tar.gz"
         mkdir -p "$HOME/.local/temporal"
-        curl -fsSL "https://github.com/temporalio/cli/releases/download/v${{ steps.temporal.outputs.version }}/temporal_cli_${{ steps.temporal.outputs.version }}_linux_amd64.tar.gz" \
-          | tar -xz -C "$HOME/.local/temporal" temporal
+        tar -xzf "$RUNNER_TEMP/temporal.tgz" -C "$HOME/.local/temporal" temporal
     - name: Put the Temporal CLI on PATH
       shell: bash
       run: |
         echo "$HOME/.local/temporal" >> "$GITHUB_PATH"
         "$HOME/.local/temporal/temporal" --version
 
-    - name: Install MongoDB 8.0 from MongoDB's apt repository
+    # MongoDB: a cached tarball from MongoDB's own download server instead of apt, so a slow or
+    # unreachable Ubuntu mirror can't stall setup.
+    - name: Cache MongoDB
+      id: mongo-cache
+      uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+      with:
+        path: ~/.local/mongodb
+        key: mongodb-${{ steps.versions.outputs.mongo }}-ubuntu2404-${{ runner.arch }}
+    - name: Download MongoDB
+      if: steps.mongo-cache.outputs.cache-hit != 'true'
+      shell: bash
+      env:
+        VERSION: ${{ steps.versions.outputs.mongo }}
+      run: |
+        name="mongodb-linux-x86_64-ubuntu2404-${VERSION}"
+        curl -fsSL --retry 5 --retry-all-errors --connect-timeout 20 \
+          -o "$RUNNER_TEMP/mongodb.tgz" "https://fastdl.mongodb.org/linux/${name}.tgz"
+        mkdir -p "$HOME/.local/mongodb"
+        tar -xzf "$RUNNER_TEMP/mongodb.tgz" -C "$HOME/.local/mongodb" --strip-components=2 "${name}/bin/mongod"
+    - name: Put MongoDB on PATH
       shell: bash
       run: |
-        curl -fsSL https://www.mongodb.org/static/pgp/server-8.0.asc \
-          | sudo gpg --dearmor -o /usr/share/keyrings/mongodb-server-8.0.gpg
-        echo "deb [ arch=amd64,arm64 signed-by=/usr/share/keyrings/mongodb-server-8.0.gpg ] https://repo.mongodb.org/apt/ubuntu noble/mongodb-org/8.0 multiverse" \
-          | sudo tee /etc/apt/sources.list.d/mongodb-org-8.0.list > /dev/null
-        sudo apt-get update
-        sudo apt-get install -y mongodb-org
+        echo "$HOME/.local/mongodb" >> "$GITHUB_PATH"
+        "$HOME/.local/mongodb/mongod" --version | head -1
 
     - name: Cache Playwright browsers
       id: playwright-cache
@@ -74,11 +96,18 @@ runs:
     - name: Install Playwright browsers
       shell: bash
       working-directory: benefit-fe
+      env:
+        BROWSERS: ${{ inputs.browsers }}
       run: |
-        if [ "${{ steps.playwright-cache.outputs.cache-hit }}" = "true" ]; then
-          pnpm exec playwright install-deps ${{ inputs.browsers }}
-        else
-          pnpm exec playwright install --with-deps ${{ inputs.browsers }}
+        # shellcheck disable=SC2086 # BROWSERS is a space-separated list
+        pnpm exec playwright install $BROWSERS
+        # Chromium's libraries are already on the ubuntu-24.04 image, so the PR's e2e job never runs apt.
+        # Firefox and WebKit (the nightly) need more, from apt, told to retry and time out, not hang.
+        if [ "$BROWSERS" != "chromium" ]; then
+          printf 'Acquire::Retries "5";\nAcquire::http::Timeout "30";\nAcquire::https::Timeout "30";\n' \
+            | sudo tee /etc/apt/apt.conf.d/80-retries > /dev/null
+          # shellcheck disable=SC2086
+          timeout 600 pnpm exec playwright install-deps $BROWSERS
         fi
 
     - name: Create the backend .env with a random demo password
