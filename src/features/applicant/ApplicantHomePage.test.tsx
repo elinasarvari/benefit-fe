@@ -54,4 +54,16 @@ describe('ApplicantHomePage', () => {
     renderApp('/applicant')
     expect(await screen.findByText('Cases are unavailable.')).toBeVisible()
   })
+
+  it('FR-004-16: applicant home links to the decision history', async () => {
+    signedInAs('applicant')
+    respondTo('GET /api/v1/cases', () => casePage([]))
+
+    renderApp('/applicant')
+
+    expect(await screen.findByRole('link', { name: 'Decision history' })).toHaveAttribute(
+      'href',
+      '/applicant/history',
+    )
+  })
 })

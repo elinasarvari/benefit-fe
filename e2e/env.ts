@@ -1,9 +1,11 @@
-export type Role = 'applicant' | 'applicant2' | 'applicant3' | 'caseworker' | 'supervisor'
+export type Role =
+  'applicant' | 'applicant2' | 'applicant3' | 'applicant4' | 'caseworker' | 'supervisor'
 
 const DEFAULT_USERNAMES: Record<Role, string> = {
   applicant: 'applicant1',
   applicant2: 'applicant2',
   applicant3: 'applicant3',
+  applicant4: 'applicant4',
   caseworker: 'caseworker1',
   supervisor: 'supervisor1',
 }
@@ -12,6 +14,7 @@ const USERNAME_VARIABLES: Record<Role, string> = {
   applicant: 'E2E_APPLICANT_USERNAME',
   applicant2: 'E2E_APPLICANT2_USERNAME',
   applicant3: 'E2E_APPLICANT3_USERNAME',
+  applicant4: 'E2E_APPLICANT4_USERNAME',
   caseworker: 'E2E_CASEWORKER_USERNAME',
   supervisor: 'E2E_SUPERVISOR_USERNAME',
 }
