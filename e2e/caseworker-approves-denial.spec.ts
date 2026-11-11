@@ -15,7 +15,8 @@ test.describe('caseworker', () => {
     page,
     playwright,
   }) => {
-    // applicant3's seeded stub result is cannot-determine, so the case waits under review.
+    // Demo household C cannot be determined by the rules engine (declared job, no usable pay stub),
+    // so the case waits under review.
     const api = await apiAs(playwright, 'applicant3')
     const caseId = await ensureOpenCase(api)
     await waitForReviewTask(api, caseId)
@@ -34,7 +35,7 @@ test.describe('caseworker', () => {
     page,
     playwright,
   }) => {
-    // applicant2's income-over-limit case (ineligible stub), opened by the session-expiry journey
+    // applicant2's income-over-limit case (demo household B is ineligible), opened by the session-expiry journey
     // and waiting under review. This file runs serially, so this test decides it; the next one
     // opens a new case for the household.
     const api = await apiAs(playwright, 'applicant2')
@@ -57,7 +58,7 @@ test.describe('caseworker', () => {
     page,
     playwright,
   }) => {
-    // applicant2's seeded stub result is ineligible, so the case waits under review.
+    // Demo household B is ineligible under the rules engine, so the case waits under review.
     const api = await apiAs(playwright, 'applicant2')
     const caseId = await ensureOpenCase(api)
     await waitForReviewTask(api, caseId)
@@ -80,7 +81,7 @@ test.describe('supervisor', () => {
     page,
     playwright,
   }) => {
-    // applicant3's seeded stub result is cannot-determine, so the case waits under review.
+    // Demo household C cannot be determined by the rules engine, so the case waits under review.
     const api = await apiAs(playwright, 'applicant3')
     const caseId = await ensureOpenCase(api)
     await waitForReviewTask(api, caseId)

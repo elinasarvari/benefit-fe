@@ -35,6 +35,15 @@ describe('generated API client', () => {
     expect(generated).toContain('related_case_id')
   })
 
+  it('FR-003-23: generated schema types listCaseDeterminations as DeterminationList', () => {
+    const generated = readFileSync(join(root, 'src/api/generated/schema.d.ts'), 'utf8')
+    const operation = /listCaseDeterminations: \{[\s\S]*?\n {4}\};\n/.exec(generated)?.[0] ?? ''
+
+    expect(operation, 'listCaseDeterminations missing from the generated types').not.toBe('')
+    expect(operation).toContain('components["schemas"]["DeterminationList"]')
+    expect(generated).toContain('DeterminationView: {')
+  })
+
   it.skipIf(!existsSync(join(root, '../benefit-be/openapi/openapi.json')))(
     'FR-001-27: the vendored openapi file matches the sibling benefit-be checkout',
     () => {

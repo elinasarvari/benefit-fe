@@ -29,7 +29,7 @@ test.describe('applicant1 has active coverage', () => {
     page,
     playwright,
   }) => {
-    // applicant1's seeded stub result is eligible, so the case opened by the application journey
+    // demo household A is eligible under the rules engine, so the case opened by the application journey
     // ends approved with coverage; the `-applications` phase runs that journey before this one.
     // `ensureCase` keeps the precondition when this file runs on its own.
     await ensureCase(await apiAs(playwright, 'applicant'))

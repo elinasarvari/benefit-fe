@@ -1,5 +1,6 @@
 import type { ComponentType } from 'react'
 import type { CaseDetail } from '@/api/cases'
+import { DeterminationSection } from './DeterminationSection'
 import { HistorySection } from './HistorySection'
 import { ReviewTaskSection } from './ReviewTaskSection'
 import { StatusSection } from './StatusSection'
@@ -20,6 +21,12 @@ export const caseSections: readonly CaseSection[] = [
     title: 'Review task',
     Component: ReviewTaskSection,
     visible: (detail) => detail.open_review_task !== null,
+  },
+  {
+    id: 'determination',
+    title: 'Determination',
+    Component: DeterminationSection,
+    visible: (detail) => ['determining', 'under_review', 'decided'].includes(detail.state),
   },
   { id: 'history', title: 'History', Component: HistorySection },
 ]
