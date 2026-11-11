@@ -2,6 +2,7 @@ import type { ComponentType } from 'react'
 import type { CaseDetail } from '@/api/cases'
 import { DeterminationSection } from './DeterminationSection'
 import { HistorySection } from './HistorySection'
+import { PendingSection } from './PendingSection'
 import { ReviewTaskSection } from './ReviewTaskSection'
 import { StatusSection } from './StatusSection'
 
@@ -22,11 +23,18 @@ export const caseSections: readonly CaseSection[] = [
     Component: ReviewTaskSection,
     visible: (detail) => detail.open_review_task !== null,
   },
+  // MVP contracts: hidden until 002 lands.
+  { id: 'documents', title: 'Documents', Component: PendingSection, visible: () => false },
   {
     id: 'determination',
     title: 'Determination',
     Component: DeterminationSection,
     visible: (detail) => ['determining', 'under_review', 'decided'].includes(detail.state),
   },
+  // MVP contracts: hidden until 004a and 011 land. The demo clock is for supervisors in the
+  // demo profile only (FR-011-11).
+  { id: 'explanation', title: 'Explanation', Component: PendingSection, visible: () => false },
+  { id: 'notices', title: 'Notices', Component: PendingSection, visible: () => false },
+  { id: 'demo-clock', title: 'Demo clock', Component: PendingSection, visible: () => false },
   { id: 'history', title: 'History', Component: HistorySection },
 ]

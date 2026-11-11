@@ -45,6 +45,7 @@ const KNOWN_CODES: Record<components['schemas']['ErrorCode'], true> = {
   validation_failed: true,
   internal_error: true,
   dependency_unavailable: true,
+  not_implemented: true,
 }
 
 function isKnownCode(value: unknown): value is components['schemas']['ErrorCode'] {
