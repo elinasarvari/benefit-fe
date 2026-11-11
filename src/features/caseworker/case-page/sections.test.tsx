@@ -31,9 +31,19 @@ describe('caseSections', () => {
       'demo-clock',
       'history',
     ])
-    for (const id of ['documents', 'explanation', 'notices', 'demo-clock']) {
+    for (const id of ['documents', 'notices', 'demo-clock']) {
       const section = caseSections.find((entry) => entry.id === id)
       expect(section?.visible?.(caseDetail({ state: 'decided' }))).toBe(false)
+    }
+  })
+
+  it('FR-004-15: explanation section shows once determining starts', () => {
+    const section = caseSections.find((entry) => entry.id === 'explanation')
+    for (const state of ['determining', 'under_review', 'decided'] as const) {
+      expect(section?.visible?.(caseDetail({ state }))).toBe(true)
+    }
+    for (const state of ['submitted', 'verifying', 'awaiting_applicant'] as const) {
+      expect(section?.visible?.(caseDetail({ state }))).toBe(false)
     }
   })
 })

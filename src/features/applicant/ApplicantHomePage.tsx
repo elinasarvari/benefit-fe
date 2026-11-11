@@ -16,6 +16,9 @@ export function ApplicantHomePage() {
       <Link to="/applicant/apply" className="text-primary underline underline-offset-4">
         Apply for coverage
       </Link>
+      <Link to="/applicant/history" className="block text-primary underline underline-offset-4">
+        Decision history
+      </Link>
       {cases.isPending ? <LoadingState label="Loading your cases…" /> : null}
       {cases.isError ? (
         <ErrorState

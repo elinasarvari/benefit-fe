@@ -2169,15 +2169,6 @@ export interface operations {
                     "application/json": components["schemas"]["ErrorEnvelope"];
                 };
             };
-            /** @description not_implemented: the feature has not landed */
-            501: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ErrorEnvelope"];
-                };
-            };
         };
     };
     getCaseHistory: {
@@ -2619,15 +2610,6 @@ export interface operations {
             };
             /** @description validation_failed */
             422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ErrorEnvelope"];
-                };
-            };
-            /** @description not_implemented: the feature has not landed */
-            501: {
                 headers: {
                     [name: string]: unknown;
                 };

@@ -1,6 +1,7 @@
 import { createBrowserRouter, Navigate, type RouteObject } from 'react-router'
 import { ApplicantHomePage } from '@/features/applicant/ApplicantHomePage'
 import { ApplyPage } from '@/features/applicant/apply/ApplyPage'
+import { HistoryPage } from '@/features/applicant/history/HistoryPage'
 import { ApplicantCasePage } from '@/features/applicant/cases/ApplicantCasePage'
 import { SignInPage } from '@/features/auth/SignInPage'
 import { CasePage } from '@/features/caseworker/case-page/CasePage'
@@ -43,14 +44,14 @@ export const routes: RouteObject[] = [
         { path: 'applicant', element: <ApplicantHomePage /> },
         { path: 'applicant/apply', element: <ApplyPage /> },
         { path: 'applicant/cases/:caseId', element: <ApplicantCasePage /> },
-        // MVP contracts: placeholders until 011 and 004a land.
+        // MVP contracts: placeholders until 011 lands.
         { path: 'applicant/notices', element: <PlaceholderPage title="Notices" /> },
         { path: 'applicant/notices/:noticeId', element: <PlaceholderPage title="Notice" /> },
         {
           path: 'applicant/requests/:noticeId',
           element: <PlaceholderPage title="Respond to a request" />,
         },
-        { path: 'applicant/history', element: <PlaceholderPage title="Decision history" /> },
+        { path: 'applicant/history', element: <HistoryPage /> },
       ],
     },
     { path: '*', element: <NotFoundPage /> },
