@@ -208,23 +208,6 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/v1/cases/{case_id}/notices": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Notices of a case, including a request waiting for approval (FR-007-03) */
-        get: operations["listCaseNotices"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
     "/api/v1/cases/{case_id}/review-tasks/{task_id}/actions": {
         parameters: {
             query?: never;
@@ -512,11 +495,6 @@ export interface components {
              */
             demo_clock: boolean;
             denial_reason: components["schemas"]["DenialReason"] | null;
-            /**
-             * Household Id
-             * Format: uuid
-             */
-            household_id: string;
             open_review_task: components["schemas"]["OpenReviewTask"] | null;
             outcome: components["schemas"]["CaseOutcome"] | null;
             override: components["schemas"]["OverrideSummary"] | null;
@@ -532,7 +510,7 @@ export interface components {
          * CaseEventKind
          * @enum {string}
          */
-        CaseEventKind: "state_changed" | "review_task_opened" | "caseworker_action" | "action_rejected" | "notice_requested" | "coverage_started" | "coverage_continued" | "demo_action";
+        CaseEventKind: "state_changed" | "review_task_opened" | "caseworker_action" | "action_rejected" | "notice_requested" | "coverage_started" | "demo_action";
         /** CaseHistoryEntry */
         CaseHistoryEntry: {
             /**
@@ -565,38 +543,6 @@ export interface components {
             items: components["schemas"]["CaseHistoryEntry"][];
             /** Next Cursor */
             next_cursor: number | null;
-        };
-        /** CaseNoticeList */
-        CaseNoticeList: {
-            /**
-             * Items
-             * @description Newest first
-             */
-            items: components["schemas"]["CaseNoticeView"][];
-        };
-        /**
-         * CaseNoticeView
-         * @description A notice of a case as staff see it, including one still waiting for approval (FR-007-03).
-         */
-        CaseNoticeView: {
-            /**
-             * Created At
-             * Format: date-time
-             */
-            created_at: string;
-            /** Delivered At */
-            delivered_at: string | null;
-            /** Due Case Date */
-            due_case_date: string | null;
-            /** Items */
-            items: components["schemas"]["RequestedItem"][];
-            /**
-             * Notice Id
-             * Format: uuid
-             */
-            notice_id: string;
-            notice_type: components["schemas"]["NoticeType"];
-            status: components["schemas"]["NoticeStatus"];
         };
         /**
          * CaseOutcome
@@ -1171,11 +1117,6 @@ export interface components {
             /** Items */
             items: components["schemas"]["NoticeSummary"][];
         };
-        /**
-         * NoticeStatus
-         * @enum {string}
-         */
-        NoticeStatus: "pending_approval" | "delivered";
         /** NoticeSummary */
         NoticeSummary: {
             /**
@@ -1454,7 +1395,7 @@ export interface components {
              * Action
              * @enum {string}
              */
-            action: "approve_denial" | "override_to_approve" | "approve";
+            action: "approve_denial" | "override_to_approve";
             /** Reason */
             reason?: string | null;
             /**
@@ -1511,7 +1452,7 @@ export interface components {
          * TimerName
          * @enum {string}
          */
-        TimerName: "response_deadline" | "review_reminder" | "review_escalation" | "coverage_end" | "redetermination_response_deadline";
+        TimerName: "response_deadline" | "review_reminder" | "review_escalation" | "coverage_end";
         /** UserPublic */
         UserPublic: {
             /** Display Name */
@@ -2300,64 +2241,6 @@ export interface operations {
             };
         };
     };
-    listCaseNotices: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                case_id: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["CaseNoticeList"];
-                };
-            };
-            /** @description Not signed in */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ErrorEnvelope"];
-                };
-            };
-            /** @description Role not allowed */
-            403: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ErrorEnvelope"];
-                };
-            };
-            /** @description Not found or not visible to the caller */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ErrorEnvelope"];
-                };
-            };
-            /** @description validation_failed */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ErrorEnvelope"];
-                };
-            };
-        };
-    };
     submitReviewAction: {
         parameters: {
             query?: never;
@@ -2562,7 +2445,7 @@ export interface operations {
                     "application/json": components["schemas"]["ErrorEnvelope"];
                 };
             };
-            /** @description not_found: no members */
+            /** @description Not found or not visible to the caller */
             404: {
                 headers: {
                     [name: string]: unknown;
@@ -2573,6 +2456,15 @@ export interface operations {
             };
             /** @description validation_failed */
             422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description not_implemented: the feature has not landed */
+            501: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -2633,7 +2525,16 @@ export interface operations {
                     "application/json": components["schemas"]["ErrorEnvelope"];
                 };
             };
-            /** @description no_active_coverage_period | household_has_open_case (the open case_id is in fields; ADR-007-06) */
+            /** @description Not found or not visible to the caller */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description No active coverage period with that ID */
             409: {
                 headers: {
                     [name: string]: unknown;
@@ -2644,6 +2545,15 @@ export interface operations {
             };
             /** @description validation_failed */
             422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description not_implemented: the feature has not landed */
+            501: {
                 headers: {
                     [name: string]: unknown;
                 };
