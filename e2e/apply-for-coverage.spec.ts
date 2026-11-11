@@ -1,6 +1,6 @@
 import { demoPassword, storageStatePath, usernameFor } from './env'
 import { expect, test } from './fixtures'
-import { apiAs, fillApplication, openCaseIds } from './support/cases'
+import { apiAs, fillApplication, openCaseIds, revealInCaseList } from './support/cases'
 
 const FIVE_MINUTES_MS = 5 * 60 * 1000
 
@@ -28,6 +28,7 @@ test.describe('applicant1 applies', () => {
     browser,
     playwright,
   }) => {
+    test.setTimeout(60_000) // paging the caseworker list past the seeded history (003)
     const started = Date.now()
     await page.goto('/applicant/apply')
 
@@ -50,10 +51,8 @@ test.describe('applicant1 applies', () => {
       const detail = await staff.get(`/api/v1/cases/${reference ?? ''}`)
       const { state } = (await detail.json()) as { state: string }
       await list.getByLabel('State').selectOption(state)
-      await expect(list.getByRole('link', { name: reference ?? '' })).toBeVisible({
-        timeout: 2_000,
-      })
-    }).toPass({ timeout: 15_000 })
+      expect(await revealInCaseList(list, reference ?? '')).toBe(true)
+    }).toPass({ timeout: 30_000 })
     await caseworker.close()
   })
 })

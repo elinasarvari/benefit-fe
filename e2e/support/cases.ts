@@ -1,4 +1,9 @@
-import { type APIRequestContext, type Page, type PlaywrightWorkerArgs } from '@playwright/test'
+import {
+  type APIRequestContext,
+  expect,
+  type Page,
+  type PlaywrightWorkerArgs,
+} from '@playwright/test'
 import { type Role, storageStatePath } from '../env'
 
 // The journeys share the seeded households (applicant1 approved, applicant2 denied after review,
@@ -83,6 +88,35 @@ export async function waitForReviewTask(api: APIRequestContext, caseId: string):
     await new Promise((resolve) => setTimeout(resolve, 1000))
   }
   throw new Error(`case ${caseId} never reached a review task`)
+}
+
+// The case list pages by decision deadline, and 003 seeds ~120 decided history cases with earlier
+// deadlines, so a new case is rarely on page one. Clicks "Load more" until the case's link shows
+// or the list has no more pages; returns whether it was found. Safe to call inside `toPass`.
+export async function revealInCaseList(page: Page, caseId: string): Promise<boolean> {
+  const link = page.getByRole('link', { name: caseId })
+  const more = page.getByRole('button', { name: 'Load more' })
+  const loading = page.getByRole('button', { name: 'Loading…' })
+  const rows = page.getByRole('row')
+  await page.getByRole('table').or(page.getByText('No cases to show.')).first().waitFor()
+  for (let pages = 0; pages < 100; pages += 1) {
+    if (await link.isVisible()) {
+      return true
+    }
+    if (await loading.isVisible()) {
+      await loading.waitFor({ state: 'detached' })
+      continue
+    }
+    if (!(await more.isVisible())) {
+      return false
+    }
+    const shown = await rows.count()
+    await more.click()
+    // "Load more" always adds rows; wait for them rather than for the button, which is briefly
+    // renamed "Loading…" and would otherwise read as "no more pages".
+    await expect.poll(() => rows.count()).toBeGreaterThan(shown)
+  }
+  return false
 }
 
 export async function fillApplication(page: Page, postalCode = '62701'): Promise<void> {
