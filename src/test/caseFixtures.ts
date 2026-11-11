@@ -77,3 +77,38 @@ export function historyEntry(
 
 export const casePage = (items: Schemas['CaseSummary'][], nextCursor: string | null = null) =>
   jsonResponse({ items, next_cursor: nextCursor })
+
+export const MEMBER_ID = 'bbbbbbbb-2222-4333-8444-555555555555'
+export const RULE_IDS = ['ELIG-01', 'ELIG-02', 'ELIG-03', 'ELIG-04', 'ELIG-05', 'ELIG-06'] as const
+
+export function ruleResult(overrides: Partial<Schemas['RuleResult']> = {}): Schemas['RuleResult'] {
+  return {
+    rule_id: 'ELIG-01',
+    outcome: 'pass',
+    inputs: { member_id: MEMBER_ID, state: 'CA' },
+    threshold: null,
+    policy_ref: 'policy:residency',
+    missing: [],
+    ...overrides,
+  }
+}
+
+export function determinationView(
+  overrides: Partial<Schemas['DeterminationView']> = {},
+): Schemas['DeterminationView'] {
+  return {
+    determination_id: 'cccccccc-2222-4333-8444-555555555555',
+    result: 'eligible',
+    reason_code: null,
+    as_of_date: '2026-03-17',
+    rule_set_id: 'benefit-2026',
+    rule_set_version: 2,
+    household_size: 3,
+    household_monthly_income: '2500.00',
+    monthly_income_limit: '3200.00',
+    rules: RULE_IDS.map((rule_id) => ruleResult({ rule_id })),
+    missing_items: [],
+    recorded_at: '2026-03-17T15:00:00Z',
+    ...overrides,
+  }
+}

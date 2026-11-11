@@ -106,6 +106,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/cases/{case_id}/determinations": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Determinations of a case, newest first, with the per-rule trace (FR-003-23) */
+        get: operations["listCaseDeterminations"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/cases/{case_id}/history": {
         parameters: {
             query?: never;
@@ -416,6 +433,57 @@ export interface components {
          * @enum {string}
          */
         DenialReason: "income_over_limit" | "other_rule_not_met" | "missing_information";
+        /** DeterminationList */
+        DeterminationList: {
+            /** Items */
+            items: components["schemas"]["DeterminationView"][];
+        };
+        /**
+         * DeterminationOutcome
+         * @enum {string}
+         */
+        DeterminationOutcome: "eligible" | "ineligible" | "cannot_determine";
+        /**
+         * DeterminationView
+         * @description Read model of a stored determination for the case page (FR-003-23, ADR-003-05).
+         */
+        DeterminationView: {
+            /**
+             * As Of Date
+             * Format: date
+             */
+            as_of_date: string;
+            /**
+             * Determination Id
+             * Format: uuid
+             */
+            determination_id: string;
+            /** Household Monthly Income */
+            household_monthly_income: string | null;
+            /** Household Size */
+            household_size: number;
+            /** Missing Items */
+            missing_items: components["schemas"]["MissingItem"][];
+            /** Monthly Income Limit */
+            monthly_income_limit: string | null;
+            /**
+             * Reason Code
+             * @enum {string|null}
+             */
+            reason_code: "income_over_limit" | "other_rule_not_met" | null;
+            /**
+             * Recorded At
+             * Format: date-time
+             */
+            recorded_at: string;
+            result: components["schemas"]["DeterminationOutcome"];
+            /** Rule Set Id */
+            rule_set_id: string | null;
+            /** Rule Set Version */
+            rule_set_version: number | null;
+            /** Rules */
+            rules: components["schemas"]["RuleResult"][];
+        };
         /** ErrorBody */
         ErrorBody: {
             code: components["schemas"]["ErrorCode"];
@@ -500,6 +568,17 @@ export interface components {
             password: string;
             /** Username */
             username: string;
+        };
+        /** MissingItem */
+        MissingItem: {
+            /** Item */
+            item: string;
+            /** Job Id */
+            job_id: string | null;
+            /** Member Id */
+            member_id: string | null;
+            /** Reason */
+            reason: string;
         };
         /** OpenReviewTask */
         OpenReviewTask: {
@@ -588,6 +667,31 @@ export interface components {
          * @enum {string}
          */
         Role: "applicant" | "caseworker" | "supervisor";
+        /**
+         * RuleId
+         * @enum {string}
+         */
+        RuleId: "ELIG-01" | "ELIG-02" | "ELIG-03" | "ELIG-04" | "ELIG-05" | "ELIG-06";
+        /**
+         * RuleOutcome
+         * @enum {string}
+         */
+        RuleOutcome: "pass" | "fail" | "missing";
+        /** RuleResult */
+        RuleResult: {
+            /** Inputs */
+            inputs: {
+                [key: string]: string;
+            };
+            /** Missing */
+            missing: components["schemas"]["MissingItem"][];
+            outcome: components["schemas"]["RuleOutcome"];
+            /** Policy Ref */
+            policy_ref: string;
+            rule_id: components["schemas"]["RuleId"];
+            /** Threshold */
+            threshold: string | null;
+        };
         /** SessionInfo */
         SessionInfo: {
             /**
@@ -893,6 +997,64 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["CaseDetail"];
+                };
+            };
+            /** @description Not signed in */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Role not allowed */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Not found or not visible to the caller */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description validation_failed */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+        };
+    };
+    listCaseDeterminations: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                case_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DeterminationList"];
                 };
             };
             /** @description Not signed in */
