@@ -13,7 +13,6 @@ describe('MVP placeholder routes', () => {
       'Respond to a request',
     ],
     ['/applicant/history', 'applicant', 'Decision history'],
-    ['/caseworker/households/11111111-2222-4333-8444-555555555555', 'caseworker', 'Household'],
     ['/caseworker/metrics', 'supervisor', 'Program metrics'],
   ] as const)('%s is routed under its role guard', async (path, role, heading) => {
     signedInAs(role)

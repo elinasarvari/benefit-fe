@@ -26,6 +26,8 @@ export const casesKey = (filters: CaseFilters) => ['cases', filters] as const
 export const caseKey = (caseId: string) => ['case', caseId] as const
 export const caseHistoryKey = (caseId: string) => ['case', caseId, 'history'] as const
 
+export const caseNoticesKey = (caseId: string) => ['case', caseId, 'notices'] as const
+
 export const POLL_INTERVAL_MS = 1_000
 export const POLL_LIMIT_MS = 10_000
 
@@ -75,6 +77,22 @@ export function useCaseHistory(caseId: string) {
       })
       if (!data) {
         throw new Error('Empty history response')
+      }
+      return data
+    },
+  })
+}
+
+export function useCaseNotices(caseId: string, enabled = true) {
+  return useQuery({
+    queryKey: caseNoticesKey(caseId),
+    enabled,
+    queryFn: async () => {
+      const { data } = await apiClient.GET('/api/v1/cases/{case_id}/notices', {
+        params: { path: { case_id: caseId } },
+      })
+      if (!data) {
+        throw new Error('Empty notices response')
       }
       return data
     },
@@ -134,6 +152,7 @@ export function useReviewAction(caseId: string, taskId: string) {
       await Promise.all([
         queryClient.invalidateQueries({ queryKey: caseKey(caseId), exact: true }),
         queryClient.invalidateQueries({ queryKey: caseHistoryKey(caseId) }),
+        queryClient.invalidateQueries({ queryKey: caseNoticesKey(caseId) }),
         queryClient.invalidateQueries({ queryKey: ['cases'] }),
       ])
       pollCaseUntilTaskCleared(queryClient, caseId)

@@ -78,4 +78,21 @@ describe('generated API client', () => {
       rmSync(scratch, { recursive: true, force: true })
     }
   }, 30_000)
+
+  it('FR-007-18: generated client matches openapi for household and notices operations', () => {
+    const spec = JSON.parse(readFileSync(join(root, 'openapi/openapi.json'), 'utf8')) as {
+      paths: Record<string, Record<string, { operationId?: string }>>
+    }
+    const operations = Object.values(spec.paths).flatMap((methods) =>
+      Object.values(methods).map((operation) => operation.operationId),
+    )
+    const generated = readFileSync(join(root, 'src/api/generated/schema.d.ts'), 'utf8')
+
+    for (const operationId of ['getHousehold', 'startRedetermination', 'listCaseNotices']) {
+      expect(operations, `${operationId} missing from openapi/openapi.json`).toContain(operationId)
+      expect(generated, `${operationId} missing from the generated types`).toContain(
+        `${operationId}:`,
+      )
+    }
+  })
 })

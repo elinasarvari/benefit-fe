@@ -1,3 +1,4 @@
+import { Link } from 'react-router'
 import type { CaseDetail } from '@/api/cases'
 import { Badge } from '@/components/ui/badge'
 import { coverageLabel, denialLabel, outcomeLabel, stateLabel } from '@/lib/caseLabels'
@@ -43,6 +44,12 @@ export function StatusSection({ detail }: { detail: CaseDetail }) {
           </dd>
         </>
       ) : null}
+      <dt className="font-medium">Household</dt>
+      <dd>
+        <Link className="underline" to={`/caseworker/households/${detail.household_id}`}>
+          Open the household
+        </Link>
+      </dd>
       {override ? (
         <>
           <dt className="font-medium">Override</dt>
