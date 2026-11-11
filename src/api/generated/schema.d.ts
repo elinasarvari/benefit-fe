@@ -4,6 +4,23 @@
  */
 
 export interface paths {
+    "/api/v1/applications": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Submit an application; opens one case per submission reference */
+        post: operations["submitApplication"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/auth/login": {
         parameters: {
             query?: never;
@@ -55,6 +72,74 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/cases": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Cases with state, days remaining and at-risk flag, soonest deadline first */
+        get: operations["listCases"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/cases/{case_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Case state, dates, outcome, coverage period and override */
+        get: operations["getCase"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/cases/{case_id}/history": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Case history with case-clock and real time, actor and reason */
+        get: operations["getCaseHistory"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/cases/{case_id}/review-tasks/{task_id}/actions": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Caseworker action on an open review task */
+        post: operations["submitReviewAction"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/health": {
         parameters: {
             query?: never;
@@ -94,10 +179,243 @@ export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
         /**
+         * ActionType
+         * @enum {string}
+         */
+        ActionType: "approve_denial" | "override_to_approve" | "request_information" | "correct_value" | "dismiss_finding" | "accept_findings" | "approve" | "edit_and_approve" | "deny_missing_information" | "extend_15_days" | "continue_with_held_data";
+        /** ApplicantMember */
+        ApplicantMember: {
+            citizenship_status: components["schemas"]["CitizenshipStatus"];
+            /**
+             * Date Of Birth
+             * Format: date
+             */
+            date_of_birth: string;
+            /** Full Name */
+            full_name: string;
+            /** Jobs */
+            jobs?: components["schemas"]["Job"][];
+            /** Medicare Entitled */
+            medicare_entitled: boolean;
+            relationship: components["schemas"]["Relationship"];
+            /** Zero Income */
+            zero_income: boolean;
+        };
+        /** ApplicationForm */
+        ApplicationForm: {
+            address: components["schemas"]["IllinoisAddress"];
+            /** Members */
+            members: components["schemas"]["ApplicantMember"][];
+        };
+        /**
+         * ApplicationSubmission
+         * @description API body; the household comes from the session, never from the body.
+         */
+        ApplicationSubmission: {
+            form: components["schemas"]["ApplicationForm"];
+            /**
+             * Submission Reference
+             * Format: uuid
+             */
+            submission_reference: string;
+        };
+        /** CaseDetail */
+        CaseDetail: {
+            /**
+             * At Risk
+             * @default false
+             */
+            at_risk: boolean;
+            /**
+             * Case Id
+             * Format: uuid
+             */
+            case_id: string;
+            case_type: components["schemas"]["CaseType"];
+            coverage_period: components["schemas"]["CoverageSummary"] | null;
+            /**
+             * Days Remaining
+             * @description null once decided
+             */
+            days_remaining: number | null;
+            /**
+             * Decision Deadline
+             * Format: date
+             */
+            decision_deadline: string;
+            /**
+             * Demo Clock
+             * @default false
+             */
+            demo_clock: boolean;
+            denial_reason: components["schemas"]["DenialReason"] | null;
+            open_review_task: components["schemas"]["OpenReviewTask"] | null;
+            outcome: components["schemas"]["CaseOutcome"] | null;
+            override: components["schemas"]["OverrideSummary"] | null;
+            /**
+             * Received On
+             * Format: date
+             */
+            received_on: string;
+            state: components["schemas"]["CaseState"];
+        };
+        /**
+         * CaseEventKind
+         * @enum {string}
+         */
+        CaseEventKind: "state_changed" | "review_task_opened" | "caseworker_action" | "action_rejected" | "notice_requested" | "coverage_started" | "demo_action";
+        /** CaseHistoryEntry */
+        CaseHistoryEntry: {
+            /**
+             * Actor
+             * @description System or a display name
+             */
+            actor: string;
+            actor_type: components["schemas"]["EventActorType"];
+            /**
+             * Case Time
+             * Format: date-time
+             */
+            case_time: string;
+            from_state?: components["schemas"]["CaseState"] | null;
+            kind: components["schemas"]["CaseEventKind"];
+            /**
+             * Real Time
+             * Format: date-time
+             */
+            real_time: string;
+            /** Reason Code */
+            reason_code: string;
+            /** Seq */
+            seq: number;
+            to_state?: components["schemas"]["CaseState"] | null;
+        };
+        /** CaseHistoryPage */
+        CaseHistoryPage: {
+            /** Items */
+            items: components["schemas"]["CaseHistoryEntry"][];
+            /** Next Cursor */
+            next_cursor: number | null;
+        };
+        /**
+         * CaseOutcome
+         * @enum {string}
+         */
+        CaseOutcome: "approved" | "denied" | "renewed_automatically" | "renewed_after_response" | "ended_by_caseworker";
+        /** CasePage */
+        CasePage: {
+            /** Items */
+            items: components["schemas"]["CaseSummary"][];
+            /** Next Cursor */
+            next_cursor: string | null;
+        };
+        /**
+         * CaseState
+         * @enum {string}
+         */
+        CaseState: "submitted" | "verifying" | "awaiting_applicant" | "determining" | "under_review" | "decided";
+        /**
+         * CaseStatus
+         * @description Query result `status` and API response. `at_risk` is derived from `days_remaining`.
+         */
+        CaseStatus: {
+            /**
+             * At Risk
+             * @default false
+             */
+            at_risk: boolean;
+            /**
+             * Case Id
+             * Format: uuid
+             */
+            case_id: string;
+            /**
+             * Days Remaining
+             * @description null once decided
+             */
+            days_remaining: number | null;
+            /**
+             * Decision Deadline
+             * Format: date
+             */
+            decision_deadline: string;
+            denial_reason: components["schemas"]["DenialReason"] | null;
+            open_review_task: components["schemas"]["OpenReviewTask"] | null;
+            outcome: components["schemas"]["CaseOutcome"] | null;
+            /**
+             * Received On
+             * Format: date
+             */
+            received_on: string;
+            state: components["schemas"]["CaseState"];
+        };
+        /** CaseSummary */
+        CaseSummary: {
+            /**
+             * At Risk
+             * @default false
+             */
+            at_risk: boolean;
+            /**
+             * Case Id
+             * Format: uuid
+             */
+            case_id: string;
+            case_type: components["schemas"]["CaseType"];
+            /** Days Remaining */
+            days_remaining?: number | null;
+            /**
+             * Decision Deadline
+             * Format: date
+             */
+            decision_deadline: string;
+            outcome?: components["schemas"]["CaseOutcome"] | null;
+            /**
+             * Received On
+             * Format: date
+             */
+            received_on: string;
+            state: components["schemas"]["CaseState"];
+        };
+        /**
+         * CaseType
+         * @enum {string}
+         */
+        CaseType: "application" | "redetermination";
+        /**
          * CheckStatus
          * @enum {string}
          */
         CheckStatus: "ok" | "down" | "degraded";
+        /**
+         * CitizenshipStatus
+         * @enum {string}
+         */
+        CitizenshipStatus: "us_citizen" | "qualifying_immigrant" | "neither";
+        /**
+         * CoverageStatus
+         * @enum {string}
+         */
+        CoverageStatus: "active" | "continued_pending_review" | "renewed" | "ended";
+        /** CoverageSummary */
+        CoverageSummary: {
+            /**
+             * End Date
+             * Format: date
+             */
+            end_date: string;
+            /**
+             * Start Date
+             * Format: date
+             */
+            start_date: string;
+            status: components["schemas"]["CoverageStatus"];
+        };
+        /**
+         * DenialReason
+         * @enum {string}
+         */
+        DenialReason: "income_over_limit" | "other_rule_not_met" | "missing_information";
         /** ErrorBody */
         ErrorBody: {
             code: components["schemas"]["ErrorCode"];
@@ -107,6 +425,8 @@ export interface components {
             message: string;
             /** Reference Id */
             reference_id: string;
+            /** Related Case Id */
+            related_case_id?: string | null;
         };
         /**
          * ErrorCode
@@ -117,6 +437,11 @@ export interface components {
         ErrorEnvelope: {
             error: components["schemas"]["ErrorBody"];
         };
+        /**
+         * EventActorType
+         * @enum {string}
+         */
+        EventActorType: "system" | "user";
         /** FieldError */
         FieldError: {
             /** Field */
@@ -145,6 +470,30 @@ export interface components {
             /** Version */
             version: string;
         };
+        /** IllinoisAddress */
+        IllinoisAddress: {
+            /** City */
+            city: string;
+            /** Line1 */
+            line1: string;
+            /** Line2 */
+            line2?: string | null;
+            /** Postal Code */
+            postal_code: string;
+            /**
+             * State
+             * @constant
+             */
+            state: "IL";
+        };
+        /** Job */
+        Job: {
+            /** Declared Monthly Gross */
+            declared_monthly_gross: number | string;
+            /** Employer */
+            employer: string;
+            pay_frequency: components["schemas"]["PayFrequency"];
+        };
         /** LoginRequest */
         LoginRequest: {
             /** Password */
@@ -152,6 +501,37 @@ export interface components {
             /** Username */
             username: string;
         };
+        /** OpenReviewTask */
+        OpenReviewTask: {
+            /** Allowed Actions */
+            allowed_actions: components["schemas"]["ActionType"][];
+            reason: components["schemas"]["ReviewReason"];
+            /**
+             * Task Id
+             * Format: uuid
+             */
+            task_id: string;
+        };
+        /** OverrideSummary */
+        OverrideSummary: {
+            /**
+             * Decided On
+             * Format: date
+             */
+            decided_on: string;
+            /**
+             * Reason
+             * @description null for applicants
+             */
+            reason?: string | null;
+            /** Reviewer Name */
+            reviewer_name: string;
+        };
+        /**
+         * PayFrequency
+         * @enum {string}
+         */
+        PayFrequency: "weekly" | "biweekly" | "semimonthly" | "monthly";
         /** ReadinessCheck */
         ReadinessCheck: {
             /** Name */
@@ -173,6 +553,36 @@ export interface components {
          * @enum {string}
          */
         ReadinessStatus: "ready" | "degraded" | "not_ready";
+        /**
+         * Relationship
+         * @enum {string}
+         */
+        Relationship: "self" | "spouse" | "partner" | "child" | "parent" | "sibling" | "other_relative" | "other";
+        /**
+         * ReviewActionBody
+         * @description A caseworker's action. The reviewer comes from the session, never from the body.
+         *
+         *     `reason` is never logged or echoed in an error (PL-11).
+         */
+        ReviewActionBody: {
+            /**
+             * Action
+             * @enum {string}
+             */
+            action: "approve_denial" | "override_to_approve";
+            /** Reason */
+            reason?: string | null;
+            /**
+             * Request Id
+             * Format: uuid
+             */
+            request_id: string;
+        };
+        /**
+         * ReviewReason
+         * @enum {string}
+         */
+        ReviewReason: "adverse_determination" | "cannot_determine" | "notice_approval" | "verification_review" | "missed_response_deadline" | "explanation_review";
         /**
          * Role
          * @enum {string}
@@ -211,6 +621,84 @@ export interface components {
 }
 export type $defs = Record<string, never>;
 export interface operations {
+    submitApplication: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ApplicationSubmission"];
+            };
+        };
+        responses: {
+            /** @description Same submission reference already opened this case */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CaseStatus"];
+                };
+            };
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CaseStatus"];
+                };
+            };
+            /** @description Not signed in */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Role not allowed */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Refused: error.code=conflict, reason in error.fields[0].type (household_has_open_case | household_has_coverage | submission_reference_in_use); error.related_case_id set for the first two */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description validation_failed; error.fields[].field is the dotted form path */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Temporal unavailable; retry the same submission */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+        };
+    };
     login: {
         parameters: {
             query?: never;
@@ -318,6 +806,264 @@ export interface operations {
             };
             /** @description validation_failed */
             422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+        };
+    };
+    listCases: {
+        parameters: {
+            query?: {
+                state?: components["schemas"]["CaseState"] | null;
+                cursor?: string | null;
+                limit?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CasePage"];
+                };
+            };
+            /** @description Not signed in */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Role not allowed */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Not found or not visible to the caller */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description validation_failed */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+        };
+    };
+    getCase: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                case_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CaseDetail"];
+                };
+            };
+            /** @description Not signed in */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Role not allowed */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Not found or not visible to the caller */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description validation_failed */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+        };
+    };
+    getCaseHistory: {
+        parameters: {
+            query?: {
+                cursor?: number;
+                limit?: number;
+            };
+            header?: never;
+            path: {
+                case_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CaseHistoryPage"];
+                };
+            };
+            /** @description Not signed in */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Role not allowed */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Not found or not visible to the caller */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description validation_failed */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+        };
+    };
+    submitReviewAction: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                case_id: string;
+                task_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ReviewActionBody"];
+            };
+        };
+        responses: {
+            /** @description Action accepted and signalled */
+            202: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Not signed in */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Role not allowed */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Not found or not visible to the caller */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Action not allowed for this task or state; recorded as rejected */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description validation_failed */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Temporal unavailable */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };

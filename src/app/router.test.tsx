@@ -1,9 +1,9 @@
 import { QueryClientProvider } from '@tanstack/react-query'
-import { render, screen } from '@testing-library/react'
+import { render, screen, waitFor } from '@testing-library/react'
 import { createMemoryRouter, RouterProvider } from 'react-router'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { createQueryClient } from '@/api/queryClient'
-import { signedInAs } from '@/test/fakeApi'
+import { resetFakeApi, signedInAs } from '@/test/fakeApi'
 import { renderApp } from '@/test/renderApp'
 import { shellRoute } from './router'
 
@@ -33,6 +33,30 @@ describe('router error boundary', () => {
     expect(alert).not.toHaveTextContent(/SELECT|internal_table/)
     expect(screen.getByRole('region', { name: /synthetic/i })).toBeInTheDocument()
     expect(screen.getByRole('main')).toContainElement(alert)
+  })
+})
+
+describe('role guards on the case routes', () => {
+  it('FR-001-26: applicant and caseworker routes sit under their role guards', async () => {
+    signedInAs('applicant')
+    const applicant = renderApp('/caseworker/cases/11111111-2222-4333-8444-555555555555')
+    await waitFor(() => {
+      expect(applicant.router.state.location.pathname).toBe('/forbidden')
+    })
+    applicant.unmount()
+
+    signedInAs('caseworker')
+    const caseworker = renderApp('/applicant/apply')
+    await waitFor(() => {
+      expect(caseworker.router.state.location.pathname).toBe('/forbidden')
+    })
+    caseworker.unmount()
+
+    resetFakeApi()
+    const anonymous = renderApp('/applicant/cases/11111111-2222-4333-8444-555555555555')
+    await waitFor(() => {
+      expect(anonymous.router.state.location.pathname).toBe('/sign-in')
+    })
   })
 })
 

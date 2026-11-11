@@ -35,6 +35,12 @@ export function useLogin() {
       return data
     },
     onSuccess: (session) => {
+      // A different user signing in (for example in the re-auth dialog) must never see the
+      // previous user's cached cases: drop every query before storing the new session.
+      const previous = queryClient.getQueryData<SessionInfo>(meQueryKey)
+      if (previous && previous.user.id !== session.user.id) {
+        queryClient.removeQueries()
+      }
       queryClient.setQueryData(meQueryKey, session)
     },
   })

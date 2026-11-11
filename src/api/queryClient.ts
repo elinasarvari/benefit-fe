@@ -30,7 +30,10 @@ export function createQueryClient({
   navigate = navigateToSignIn,
   retryDelay,
 }: QueryClientOptions = {}): QueryClient {
-  const handleUnauthorized = (error: Error): void => {
+  const handleUnauthorized = (error: Error, handledInPlace = false): void => {
+    if (handledInPlace) {
+      return
+    }
     if (error instanceof ApiError && error.status === 401) {
       const destination = SIGN_IN_REDIRECTS.get(error.code)
       if (destination) {
@@ -39,8 +42,18 @@ export function createQueryClient({
     }
   }
   return new QueryClient({
-    queryCache: new QueryCache({ onError: handleUnauthorized }),
-    mutationCache: new MutationCache({ onError: handleUnauthorized }),
+    queryCache: new QueryCache({
+      onError: (error) => {
+        handleUnauthorized(error)
+      },
+    }),
+    // A mutation with `meta.handlesSessionExpiry` opens its own sign-in dialog, so a lost
+    // session does not navigate away and discard what the person typed (ADR-001-10).
+    mutationCache: new MutationCache({
+      onError: (error, _variables, _result, mutation) => {
+        handleUnauthorized(error, mutation.meta?.handlesSessionExpiry === true)
+      },
+    }),
     defaultOptions: {
       queries: { retry: shouldRetry, ...(retryDelay === undefined ? {} : { retryDelay }) },
     },

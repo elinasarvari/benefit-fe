@@ -8,10 +8,10 @@ import { routes } from '@/app/router'
 export function renderApp(path: string) {
   const navigate = vi.fn<(to: string) => void>()
   const router = createMemoryRouter(routes, { initialEntries: [path] })
-  render(
+  const { unmount } = render(
     <QueryClientProvider client={createQueryClient({ navigate, retryDelay: 0 })}>
       <RouterProvider router={router} />
     </QueryClientProvider>,
   )
-  return { router, navigate }
+  return { router, navigate, unmount }
 }
