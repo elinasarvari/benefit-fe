@@ -39,11 +39,14 @@ const COVERAGE_LABELS: Record<string, string> = {
 const ACTION_LABELS: Record<string, string> = {
   approve_denial: 'Approve the denial',
   override_to_approve: 'Override and approve',
+  approve: 'Approve and send the request',
 }
 
 const REVIEW_REASON_LABELS: Record<string, string> = {
   adverse_determination: 'The determination was adverse',
   cannot_determine: 'Eligibility could not be determined',
+  notice_approval: 'The request for information needs approval before it is sent',
+  missed_response_deadline: 'The household did not respond by the deadline',
 }
 
 // Reason codes are enum-backed snake_case; an unknown one is still shown readably.

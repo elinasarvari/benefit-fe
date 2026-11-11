@@ -5,6 +5,7 @@ type Schemas = components['schemas']
 
 export const CASE_ID = '11111111-2222-4333-8444-555555555555'
 export const OTHER_CASE_ID = '99999999-2222-4333-8444-555555555555'
+export const HOUSEHOLD_ID = '7a1b2c3d-4e5f-4a6b-8c7d-9e0f1a2b3c4d'
 export const TASK_ID = 'aaaaaaaa-2222-4333-8444-555555555555'
 
 export function caseDetail(overrides: Partial<Schemas['CaseDetail']> = {}): Schemas['CaseDetail'] {
@@ -19,6 +20,7 @@ export function caseDetail(overrides: Partial<Schemas['CaseDetail']> = {}): Sche
     denial_reason: null,
     open_review_task: null,
     pending_timer: null,
+    household_id: HOUSEHOLD_ID,
     case_type: 'application',
     coverage_period: null,
     override: null,

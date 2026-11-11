@@ -5,6 +5,7 @@ import { ApplicantCasePage } from '@/features/applicant/cases/ApplicantCasePage'
 import { SignInPage } from '@/features/auth/SignInPage'
 import { CasePage } from '@/features/caseworker/case-page/CasePage'
 import { CaseworkerHomePage } from '@/features/caseworker/CaseworkerHomePage'
+import { HouseholdPage } from '@/features/caseworker/household/HouseholdPage'
 import { NotFoundPage } from '@/features/errors/NotFoundPage'
 import { RouteErrorPage } from '@/features/errors/RouteErrorPage'
 import { ForbiddenPage } from '@/features/errors/ForbiddenPage'
@@ -29,10 +30,10 @@ export const routes: RouteObject[] = [
       children: [
         { path: 'caseworker', element: <CaseworkerHomePage /> },
         { path: 'caseworker/cases/:caseId', element: <CasePage /> },
-        // MVP contracts: placeholders until 007a and 008 land.
+        // MVP contracts: placeholder until 008 lands.
         {
           path: 'caseworker/households/:householdId',
-          element: <PlaceholderPage title="Household" />,
+          element: <HouseholdPage />,
         },
         { path: 'caseworker/metrics', element: <PlaceholderPage title="Program metrics" /> },
       ],
