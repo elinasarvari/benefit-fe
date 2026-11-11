@@ -9,6 +9,7 @@ interface ApiErrorInit {
   message: string
   fields: FieldError[]
   referenceId: string | null
+  relatedCaseId?: string | null
 }
 
 export class ApiError extends Error {
@@ -16,14 +17,16 @@ export class ApiError extends Error {
   readonly code: ApiErrorCode
   readonly fields: FieldError[]
   readonly referenceId: string | null
+  readonly relatedCaseId: string | null
 
-  constructor({ status, code, message, fields, referenceId }: ApiErrorInit) {
+  constructor({ status, code, message, fields, referenceId, relatedCaseId }: ApiErrorInit) {
     super(message)
     this.name = 'ApiError'
     this.status = status
     this.code = code
     this.fields = fields
     this.referenceId = referenceId
+    this.relatedCaseId = relatedCaseId ?? null
   }
 }
 
@@ -77,7 +80,13 @@ export async function parseApiError(response: Response): Promise<ApiError> {
   if (!isRecord(body) || !isRecord(body.error)) {
     return new ApiError(fallback)
   }
-  const { code, message, fields, reference_id: referenceId } = body.error
+  const {
+    code,
+    message,
+    fields,
+    reference_id: referenceId,
+    related_case_id: relatedCaseId,
+  } = body.error
   return new ApiError({
     status: response.status,
     code: isKnownCode(code) ? code : 'unknown',
@@ -86,5 +95,6 @@ export async function parseApiError(response: Response): Promise<ApiError> {
       ? fields.map(toFieldError).filter((field) => field !== null)
       : fallback.fields,
     referenceId: typeof referenceId === 'string' ? referenceId : fallback.referenceId,
+    relatedCaseId: typeof relatedCaseId === 'string' ? relatedCaseId : null,
   })
 }

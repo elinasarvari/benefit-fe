@@ -1,10 +1,11 @@
 import { PageHeading } from '@/components/PageHeading'
+import { CaseListPage } from './CaseListPage'
 
 export function CaseworkerHomePage() {
   return (
-    <section className="space-y-2">
+    <section className="space-y-4">
       <PageHeading>Caseworker console</PageHeading>
-      <p>No cases to show yet.</p>
+      <CaseListPage />
     </section>
   )
 }

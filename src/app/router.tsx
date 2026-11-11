@@ -1,6 +1,9 @@
 import { createBrowserRouter, Navigate, type RouteObject } from 'react-router'
 import { ApplicantHomePage } from '@/features/applicant/ApplicantHomePage'
+import { ApplyPage } from '@/features/applicant/apply/ApplyPage'
+import { ApplicantCasePage } from '@/features/applicant/cases/ApplicantCasePage'
 import { SignInPage } from '@/features/auth/SignInPage'
+import { CasePage } from '@/features/caseworker/case-page/CasePage'
 import { CaseworkerHomePage } from '@/features/caseworker/CaseworkerHomePage'
 import { NotFoundPage } from '@/features/errors/NotFoundPage'
 import { RouteErrorPage } from '@/features/errors/RouteErrorPage'
@@ -22,11 +25,18 @@ export const routes: RouteObject[] = [
     { path: 'forbidden', element: <ForbiddenPage /> },
     {
       element: <RequireRole allow={['caseworker', 'supervisor']} />,
-      children: [{ path: 'caseworker', element: <CaseworkerHomePage /> }],
+      children: [
+        { path: 'caseworker', element: <CaseworkerHomePage /> },
+        { path: 'caseworker/cases/:caseId', element: <CasePage /> },
+      ],
     },
     {
       element: <RequireRole allow={['applicant']} />,
-      children: [{ path: 'applicant', element: <ApplicantHomePage /> }],
+      children: [
+        { path: 'applicant', element: <ApplicantHomePage /> },
+        { path: 'applicant/apply', element: <ApplyPage /> },
+        { path: 'applicant/cases/:caseId', element: <ApplicantCasePage /> },
+      ],
     },
     { path: '*', element: <NotFoundPage /> },
   ]),

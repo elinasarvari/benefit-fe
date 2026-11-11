@@ -9,6 +9,14 @@ vi.mock('@/api/client', async (importOriginal) => {
   return { ...actual, apiClient: actual.createApiClient(fakeFetch) }
 })
 
+// jsdom has no ResizeObserver; Radix checkbox and radio use it.
+// eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+globalThis.ResizeObserver ??= class {
+  observe(): void {}
+  unobserve(): void {}
+  disconnect(): void {}
+}
+
 beforeEach(() => {
   resetFakeApi()
 })
