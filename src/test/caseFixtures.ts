@@ -18,6 +18,7 @@ export function caseDetail(overrides: Partial<Schemas['CaseDetail']> = {}): Sche
     outcome: null,
     denial_reason: null,
     open_review_task: null,
+    pending_timer: null,
     case_type: 'application',
     coverage_period: null,
     override: null,
@@ -54,6 +55,7 @@ export function caseStatus(overrides: Partial<Schemas['CaseStatus']> = {}): Sche
     outcome: null,
     denial_reason: null,
     open_review_task: null,
+    pending_timer: null,
     ...overrides,
   }
 }

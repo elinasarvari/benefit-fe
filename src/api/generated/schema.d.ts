@@ -106,6 +106,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/cases/{case_id}/advance-clock": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Demo profile only: fire the case's next pending timer (FR-011-05, FR-011-11) */
+        post: operations["advanceCaseClock"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/cases/{case_id}/determinations": {
         parameters: {
             query?: never;
@@ -115,6 +132,57 @@ export interface paths {
         };
         /** Determinations of a case, newest first, with the per-rule trace (FR-003-23) */
         get: operations["listCaseDeterminations"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/cases/{case_id}/documents": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Record a pay stub's typed details; the file follows to .../content (FR-002-21) */
+        post: operations["createPayStubDocument"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/cases/{case_id}/documents/{document_id}/content": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /** Upload the file of a recorded pay stub: PDF, PNG or JPEG, up to 10 MB (FR-002-17) */
+        put: operations["uploadDocumentContent"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/cases/{case_id}/explanations": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Caseworker explanations of a case's determinations, as stored (FR-004-15) */
+        get: operations["listCaseExplanations"];
         put?: never;
         post?: never;
         delete?: never;
@@ -157,6 +225,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/cases/{case_id}/verification": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Documents, entered details and findings of a case (FR-002-18) */
+        get: operations["getCaseVerification"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/health": {
         parameters: {
             query?: never;
@@ -166,6 +251,142 @@ export interface paths {
         };
         /** Health */
         get: operations["getHealth"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/households/{household_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Members, coverage periods and cases of a household (FR-007-18) */
+        get: operations["getHousehold"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/households/{household_id}/redeterminations": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Start a coverage period's redetermination, or link to the running one (FR-007-10) */
+        post: operations["startRedetermination"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/me/history": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** The applicant's decisions per coverage period, with explanations (FR-004-16) */
+        get: operations["getApplicantHistory"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/me/notices": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Notices delivered to the applicant, newest first (FR-011-09) */
+        get: operations["listMyNotices"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/me/notices/{notice_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** One delivered notice (FR-011-09) */
+        get: operations["getMyNotice"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/me/requests": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Open requests for information, with items and due dates (FR-011-10) */
+        get: operations["listMyOpenRequests"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/me/requests/{notice_id}/response": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Answer a request: uploaded documents and confirmed items (FR-011-03, FR-011-10) */
+        post: operations["respondToRequest"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/metrics": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** The four program metrics for one month, by case-clock dates (FR-008-08) */
+        get: operations["getProgramMetrics"];
         put?: never;
         post?: never;
         delete?: never;
@@ -200,6 +421,14 @@ export interface components {
          * @enum {string}
          */
         ActionType: "approve_denial" | "override_to_approve" | "request_information" | "correct_value" | "dismiss_finding" | "accept_findings" | "approve" | "edit_and_approve" | "deny_missing_information" | "extend_15_days" | "continue_with_held_data";
+        /**
+         * ApplicantHistory
+         * @description FR-004-16: every coverage period's decision with the explanation given at the time.
+         */
+        ApplicantHistory: {
+            /** Items */
+            items: components["schemas"]["HistoryEntry"][];
+        };
         /** ApplicantMember */
         ApplicantMember: {
             citizenship_status: components["schemas"]["CitizenshipStatus"];
@@ -269,6 +498,7 @@ export interface components {
             open_review_task: components["schemas"]["OpenReviewTask"] | null;
             outcome: components["schemas"]["CaseOutcome"] | null;
             override: components["schemas"]["OverrideSummary"] | null;
+            pending_timer: components["schemas"]["PendingTimer"] | null;
             /**
              * Received On
              * Format: date
@@ -359,6 +589,7 @@ export interface components {
             denial_reason: components["schemas"]["DenialReason"] | null;
             open_review_task: components["schemas"]["OpenReviewTask"] | null;
             outcome: components["schemas"]["CaseOutcome"] | null;
+            pending_timer: components["schemas"]["PendingTimer"] | null;
             /**
              * Received On
              * Format: date
@@ -400,15 +631,83 @@ export interface components {
          */
         CaseType: "application" | "redetermination";
         /**
+         * CaseVerification
+         * @description The case page's documents section (FR-002-18).
+         */
+        CaseVerification: {
+            /** Documents */
+            documents: components["schemas"]["DocumentView"][];
+            /** @description null until the check has run */
+            result: components["schemas"]["VerificationResult"] | null;
+        };
+        /**
          * CheckStatus
          * @enum {string}
          */
         CheckStatus: "ok" | "down" | "degraded";
+        /** Citation */
+        Citation: {
+            /**
+             * Manual Version
+             * Format: date
+             */
+            manual_version: string;
+            rule_id: components["schemas"]["RuleId"];
+            /** Section */
+            section: string;
+            /** Title */
+            title: string;
+        };
         /**
          * CitizenshipStatus
          * @enum {string}
          */
         CitizenshipStatus: "us_citizen" | "qualifying_immigrant" | "neither";
+        /**
+         * Correction
+         * @description A caseworker's correction of one entered detail (FR-002-19).
+         */
+        Correction: {
+            /**
+             * Corrected At
+             * Format: date-time
+             */
+            corrected_at: string;
+            /** Field */
+            field: string;
+            /** New Value */
+            new_value: string;
+            /** Old Value */
+            old_value: string;
+            /** Reason */
+            reason: string;
+            /**
+             * Reviewer Id
+             * Format: uuid
+             */
+            reviewer_id: string;
+        };
+        /** CoveragePeriodView */
+        CoveragePeriodView: {
+            /**
+             * Coverage Period Id
+             * Format: uuid
+             */
+            coverage_period_id: string;
+            /**
+             * End Date
+             * Format: date
+             */
+            end_date: string;
+            /** Running Redetermination Case Id */
+            running_redetermination_case_id: string | null;
+            /**
+             * Start Date
+             * Format: date
+             */
+            start_date: string;
+            status: components["schemas"]["CoverageStatus"];
+        };
         /**
          * CoverageStatus
          * @enum {string}
@@ -427,6 +726,40 @@ export interface components {
              */
             start_date: string;
             status: components["schemas"]["CoverageStatus"];
+        };
+        /**
+         * DecisionExplanation
+         * @description One audience's explanation, stored in `decision_explanations` as built (FR-004-13).
+         */
+        DecisionExplanation: {
+            audience: components["schemas"]["ExplanationAudience"];
+            /**
+             * Built At
+             * Format: date-time
+             */
+            built_at: string;
+            /**
+             * Case Id
+             * Format: uuid
+             */
+            case_id: string;
+            /** Citations */
+            citations?: components["schemas"]["Citation"][];
+            /**
+             * Determination Id
+             * Format: uuid
+             */
+            determination_id: string;
+            /**
+             * Household Id
+             * Format: uuid
+             */
+            household_id: string;
+            result: components["schemas"]["DeterminationOutcome"];
+            /** Synthetic */
+            synthetic?: true | null;
+            /** Text */
+            text: string;
         };
         /**
          * DenialReason
@@ -484,6 +817,48 @@ export interface components {
             /** Rules */
             rules: components["schemas"]["RuleResult"][];
         };
+        /** Dismissal */
+        Dismissal: {
+            /**
+             * Dismissed At
+             * Format: date-time
+             */
+            dismissed_at: string;
+            /** Reason */
+            reason: string;
+            /**
+             * Reviewer Id
+             * Format: uuid
+             */
+            reviewer_id: string;
+        };
+        /** DocumentCreated */
+        DocumentCreated: {
+            /**
+             * Document Id
+             * Format: uuid
+             */
+            document_id: string;
+        };
+        /** DocumentView */
+        DocumentView: {
+            /**
+             * Content Type
+             * @enum {string}
+             */
+            content_type: "application/pdf" | "image/png" | "image/jpeg";
+            details: components["schemas"]["PayStubDetails"];
+            /**
+             * Document Id
+             * Format: uuid
+             */
+            document_id: string;
+            /**
+             * Uploaded At
+             * Format: date-time
+             */
+            uploaded_at: string;
+        };
         /** ErrorBody */
         ErrorBody: {
             code: components["schemas"]["ErrorCode"];
@@ -500,7 +875,7 @@ export interface components {
          * ErrorCode
          * @enum {string}
          */
-        ErrorCode: "auth.required" | "auth.session_expired" | "auth.invalid_credentials" | "auth.forbidden" | "not_found" | "conflict" | "validation_failed" | "internal_error" | "dependency_unavailable";
+        ErrorCode: "auth.required" | "auth.session_expired" | "auth.invalid_credentials" | "auth.forbidden" | "not_found" | "conflict" | "validation_failed" | "internal_error" | "dependency_unavailable" | "not_implemented";
         /** ErrorEnvelope */
         ErrorEnvelope: {
             error: components["schemas"]["ErrorBody"];
@@ -510,6 +885,16 @@ export interface components {
          * @enum {string}
          */
         EventActorType: "system" | "user";
+        /**
+         * ExplanationAudience
+         * @enum {string}
+         */
+        ExplanationAudience: "applicant" | "caseworker";
+        /** ExplanationList */
+        ExplanationList: {
+            /** Items */
+            items: components["schemas"]["DecisionExplanation"][];
+        };
         /** FieldError */
         FieldError: {
             /** Field */
@@ -519,6 +904,44 @@ export interface components {
             /** Type */
             type: string;
         };
+        /**
+         * Finding
+         * @description One discrepancy (FR-002-03, FR-002-14, FR-002-24). `finding_id` is derived from the case,
+         *     cause, member, job and document, so running the check again gives the same ID (FR-002-23)
+         *     and two "different person" stubs (no member, no job) still get different IDs.
+         *     `identity` is set for identity mismatches: `no_match` or `no_record` (FR-002-24).
+         */
+        Finding: {
+            cause: components["schemas"]["FindingCause"];
+            /**
+             * Conversion
+             * @description e.g. "weekly 300.00 x 52 / 12 = 1300.00"
+             */
+            conversion?: string | null;
+            /** Declared Monthly */
+            declared_monthly?: string | null;
+            dismissed?: components["schemas"]["Dismissal"] | null;
+            /** Document Id */
+            document_id?: string | null;
+            /** Documented Monthly */
+            documented_monthly?: string | null;
+            /**
+             * Finding Id
+             * Format: uuid
+             */
+            finding_id: string;
+            identity?: components["schemas"]["IdentityMatch"] | null;
+            /** Job Id */
+            job_id?: string | null;
+            /** Member Id */
+            member_id?: string | null;
+        };
+        /**
+         * FindingCause
+         * @description FR-002-16: the causes a "Verification review" task shows.
+         * @enum {string}
+         */
+        FindingCause: "income_mismatch" | "different_person" | "conflicting_stubs" | "identity_mismatch";
         /** HealthReport */
         HealthReport: {
             /** Component */
@@ -538,6 +961,62 @@ export interface components {
             /** Version */
             version: string;
         };
+        /** HistoryEntry */
+        HistoryEntry: {
+            /**
+             * Case Id
+             * Format: uuid
+             */
+            case_id: string;
+            case_type: components["schemas"]["CaseType"];
+            /** Coverage End */
+            coverage_end: string | null;
+            /** Coverage Start */
+            coverage_start: string | null;
+            /** Decided On */
+            decided_on: string | null;
+            /** @description Applicant explanation */
+            explanation: components["schemas"]["DecisionExplanation"] | null;
+            outcome: components["schemas"]["CaseOutcome"] | null;
+        };
+        /** HouseholdMemberView */
+        HouseholdMemberView: {
+            /**
+             * Date Of Birth
+             * Format: date
+             */
+            date_of_birth: string;
+            /** Full Name */
+            full_name: string;
+            /**
+             * Member Id
+             * Format: uuid
+             */
+            member_id: string;
+            relationship: components["schemas"]["Relationship"];
+        };
+        /**
+         * HouseholdView
+         * @description FR-007-18: members, coverage periods and cases.
+         */
+        HouseholdView: {
+            /** Cases */
+            cases: components["schemas"]["CaseSummary"][];
+            /** Coverage Periods */
+            coverage_periods: components["schemas"]["CoveragePeriodView"][];
+            /**
+             * Household Id
+             * Format: uuid
+             */
+            household_id: string;
+            /** Members */
+            members: components["schemas"]["HouseholdMemberView"][];
+        };
+        /**
+         * IdentityMatch
+         * @enum {string}
+         */
+        IdentityMatch: "match" | "no_match" | "no_record";
         /** IllinoisAddress */
         IllinoisAddress: {
             /** City */
@@ -569,6 +1048,59 @@ export interface components {
             /** Username */
             username: string;
         };
+        /**
+         * MetricName
+         * @enum {string}
+         */
+        MetricName: "average_days_to_decision" | "share_decided_within_deadline" | "automatic_renewal_rate" | "procedural_denial_rate";
+        /**
+         * MetricStatus
+         * @enum {string}
+         */
+        MetricStatus: "ok" | "no_data" | "not_applicable";
+        /** MetricValue */
+        MetricValue: {
+            name: components["schemas"]["MetricName"];
+            status: components["schemas"]["MetricStatus"];
+            /**
+             * Value
+             * @description null unless status is ok (FR-008-06)
+             */
+            value: string | null;
+        };
+        /**
+         * MetricsReport
+         * @description FR-008-09: metric values only, no names or identifiers.
+         */
+        MetricsReport: {
+            /** Metrics */
+            metrics: components["schemas"]["MetricValue"][];
+            /** Month */
+            month: string;
+        };
+        /**
+         * MissingDocument
+         * @description Named apart from 003's `MissingItem`, which the OpenAPI document already uses.
+         */
+        MissingDocument: {
+            /**
+             * Job Id
+             * Format: uuid
+             */
+            job_id: string;
+            kind: components["schemas"]["MissingDocumentKind"];
+            /**
+             * Member Id
+             * Format: uuid
+             */
+            member_id: string;
+        };
+        /**
+         * MissingDocumentKind
+         * @description FR-002-15: a declared job with no pay stub, or whose latest stub is too old.
+         * @enum {string}
+         */
+        MissingDocumentKind: "no_stub" | "stub_too_old";
         /** MissingItem */
         MissingItem: {
             /** Item */
@@ -579,6 +1111,85 @@ export interface components {
             member_id: string | null;
             /** Reason */
             reason: string;
+        };
+        /** NoticeList */
+        NoticeList: {
+            /** Items */
+            items: components["schemas"]["NoticeSummary"][];
+        };
+        /** NoticeSummary */
+        NoticeSummary: {
+            /**
+             * Delivered At
+             * Format: date-time
+             */
+            delivered_at: string;
+            /**
+             * Notice Id
+             * Format: uuid
+             */
+            notice_id: string;
+            notice_type: components["schemas"]["NoticeType"];
+        };
+        /**
+         * NoticeType
+         * @description FR-011-06 (MVP: no redetermination form, 007b is dropped). Which types wait for a
+         *     caseworker is `NOTICE_NEEDS_APPROVAL` in `packages/domain/notice.py`.
+         * @enum {string}
+         */
+        NoticeType: "approval" | "denial" | "automatic_renewal" | "renewal_after_response" | "coverage_ended" | "request_for_information";
+        /** NoticeView */
+        NoticeView: {
+            /**
+             * Case Id
+             * Format: uuid
+             */
+            case_id: string;
+            /**
+             * Delivered At
+             * Format: date-time
+             */
+            delivered_at: string;
+            /** Due Case Date */
+            due_case_date: string | null;
+            /** Items */
+            items: components["schemas"]["RequestedItem"][];
+            /**
+             * Notice Id
+             * Format: uuid
+             */
+            notice_id: string;
+            notice_type: components["schemas"]["NoticeType"];
+            /** Text */
+            text: string;
+        };
+        /**
+         * OpenRequest
+         * @description An approved request for information the applicant has not answered (FR-011-10).
+         */
+        OpenRequest: {
+            /**
+             * Case Id
+             * Format: uuid
+             */
+            case_id: string;
+            /**
+             * Due Case Date
+             * Format: date
+             */
+            due_case_date: string;
+            /** Items */
+            items: components["schemas"]["RequestedItem"][];
+            /**
+             * Notice Id
+             * Format: uuid
+             */
+            notice_id: string;
+        };
+        /** OpenRequestList */
+        OpenRequestList: {
+            /** Items */
+            items: components["schemas"]["OpenRequest"][];
         };
         /** OpenReviewTask */
         OpenReviewTask: {
@@ -611,6 +1222,82 @@ export interface components {
          * @enum {string}
          */
         PayFrequency: "weekly" | "biweekly" | "semimonthly" | "monthly";
+        /**
+         * PayStubDetails
+         * @description What the applicant typed for one uploaded pay stub (FR-002-21). `member_id` is the
+         *     household member the employee name matched, or None (FR-002-14).
+         */
+        PayStubDetails: {
+            /**
+             * Case Id
+             * Format: uuid
+             */
+            case_id: string;
+            /** Corrections */
+            corrections?: components["schemas"]["Correction"][];
+            /**
+             * Document Id
+             * Format: uuid
+             */
+            document_id: string;
+            /** Employee Name */
+            employee_name: string;
+            /** Employer */
+            employer: string;
+            frequency: components["schemas"]["PayFrequency"];
+            /** Gross Pay */
+            gross_pay: string;
+            /**
+             * Household Id
+             * Format: uuid
+             */
+            household_id: string;
+            /** Member Id */
+            member_id?: string | null;
+            /**
+             * Pay Date
+             * Format: date
+             */
+            pay_date: string;
+        };
+        /**
+         * PayStubUpload
+         * @description Step 1 of an upload: the details the applicant typed (FR-002-21). Step 2 sends the file's
+         *     bytes to `PUT /cases/{case_id}/documents/{document_id}/content`.
+         */
+        PayStubUpload: {
+            /**
+             * Content Type
+             * @enum {string}
+             */
+            content_type: "application/pdf" | "image/png" | "image/jpeg";
+            /** Employee Name */
+            employee_name: string;
+            /** Employer */
+            employer: string;
+            frequency: components["schemas"]["PayFrequency"];
+            /** Gross Pay */
+            gross_pay: number | string;
+            /**
+             * Pay Date
+             * Format: date
+             */
+            pay_date: string;
+            /** Size Bytes */
+            size_bytes: number;
+        };
+        /**
+         * PendingTimer
+         * @description The case's next timer, on the case clock. "Advance clock" fires it (FR-011-05).
+         */
+        PendingTimer: {
+            /**
+             * Due Case Time
+             * Format: date-time
+             */
+            due_case_time: string;
+            name: components["schemas"]["TimerName"];
+        };
         /** ReadinessCheck */
         ReadinessCheck: {
             /** Name */
@@ -632,11 +1319,71 @@ export interface components {
          * @enum {string}
          */
         ReadinessStatus: "ready" | "degraded" | "not_ready";
+        /** RedeterminationStart */
+        RedeterminationStart: {
+            /**
+             * Coverage Period Id
+             * Format: uuid
+             */
+            coverage_period_id: string;
+        };
+        /** RedeterminationStarted */
+        RedeterminationStarted: {
+            /**
+             * Case Id
+             * Format: uuid
+             */
+            case_id: string;
+            /**
+             * Created
+             * @description false when one was already running for the period
+             */
+            created: boolean;
+        };
         /**
          * Relationship
          * @enum {string}
          */
         Relationship: "self" | "spouse" | "partner" | "child" | "parent" | "sibling" | "other_relative" | "other";
+        /**
+         * RequestResponseBody
+         * @description The applicant's answer: documents uploaded first (002's endpoints), then confirmed items.
+         */
+        RequestResponseBody: {
+            /** Confirmed Item Ids */
+            confirmed_item_ids?: string[];
+            /** Document Ids */
+            document_ids?: string[];
+        };
+        /**
+         * RequestedItem
+         * @description One thing a request for information asks for (FR-011-12).
+         */
+        RequestedItem: {
+            /**
+             * Item Id
+             * Format: uuid
+             */
+            item_id: string;
+            /** Job Id */
+            job_id?: string | null;
+            kind: components["schemas"]["RequestedItemKind"];
+            /**
+             * Label
+             * @description Text shown to the applicant
+             */
+            label: string;
+            /**
+             * Member Id
+             * Format: uuid
+             */
+            member_id: string;
+        };
+        /**
+         * RequestedItemKind
+         * @enum {string}
+         */
+        RequestedItemKind: "pay_stub" | "confirm_member" | "confirm_job" | "confirm_income";
         /**
          * ReviewActionBody
          * @description A caseworker's action. The reviewer comes from the session, never from the body.
@@ -701,6 +1448,11 @@ export interface components {
             expires_at: string;
             user: components["schemas"]["UserPublic"];
         };
+        /**
+         * TimerName
+         * @enum {string}
+         */
+        TimerName: "response_deadline" | "review_reminder" | "review_escalation" | "coverage_end";
         /** UserPublic */
         UserPublic: {
             /** Display Name */
@@ -715,6 +1467,28 @@ export interface components {
             role: components["schemas"]["Role"];
             /** Username */
             username: string;
+        };
+        /**
+         * VerificationResult
+         * @description Output of `verify_documents` (FR-002-23).
+         *
+         *     `complete` and `needs_review` keep the names of 001's `VerificationOutcome`, and every
+         *     added field has a default, so recorded workflow histories still replay (TW-14).
+         *     `identity_verified` is None when the check did not look at identity (the 001 stub).
+         */
+        VerificationResult: {
+            /** Case Id */
+            case_id?: string | null;
+            /** Complete */
+            complete: boolean;
+            /** Findings */
+            findings?: components["schemas"]["Finding"][];
+            /** Identity Verified */
+            identity_verified?: boolean | null;
+            /** Missing Items */
+            missing_items?: components["schemas"]["MissingDocument"][];
+            /** Needs Review */
+            needs_review: boolean;
         };
     };
     responses: never;
@@ -1037,6 +1811,89 @@ export interface operations {
             };
         };
     };
+    advanceCaseClock: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                case_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Accepted and signalled to the case */
+            202: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Not signed in */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Role not allowed */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Not found or not visible to the caller */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Not allowed in the case's current state */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description validation_failed */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description not_implemented: the feature has not landed */
+            501: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Temporal unavailable */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+        };
+    };
     listCaseDeterminations: {
         parameters: {
             query?: never;
@@ -1086,6 +1943,234 @@ export interface operations {
             };
             /** @description validation_failed */
             422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+        };
+    };
+    createPayStubDocument: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                case_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PayStubUpload"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DocumentCreated"];
+                };
+            };
+            /** @description Not signed in */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Role not allowed */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Not found or not visible to the caller */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description validation_failed */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description not_implemented: the feature has not landed */
+            501: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+        };
+    };
+    uploadDocumentContent: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                case_id: string;
+                document_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/pdf": string;
+                "image/jpeg": string;
+                "image/png": string;
+            };
+        };
+        responses: {
+            /** @description File stored */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Not signed in */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Role not allowed */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Not found or not visible to the caller */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Larger than 10485760 bytes */
+            413: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Not PDF, PNG or JPEG */
+            415: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description validation_failed */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description not_implemented: the feature has not landed */
+            501: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+        };
+    };
+    listCaseExplanations: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                case_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ExplanationList"];
+                };
+            };
+            /** @description Not signed in */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Role not allowed */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Not found or not visible to the caller */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description validation_failed */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description not_implemented: the feature has not landed */
+            501: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -1235,6 +2320,73 @@ export interface operations {
             };
         };
     };
+    getCaseVerification: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                case_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CaseVerification"];
+                };
+            };
+            /** @description Not signed in */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Role not allowed */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Not found or not visible to the caller */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description validation_failed */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description not_implemented: the feature has not landed */
+            501: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+        };
+    };
     getHealth: {
         parameters: {
             query?: never;
@@ -1251,6 +2403,587 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["HealthReport"];
+                };
+            };
+        };
+    };
+    getHousehold: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                household_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HouseholdView"];
+                };
+            };
+            /** @description Not signed in */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Role not allowed */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Not found or not visible to the caller */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description validation_failed */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description not_implemented: the feature has not landed */
+            501: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+        };
+    };
+    startRedetermination: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                household_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["RedeterminationStart"];
+            };
+        };
+        responses: {
+            /** @description Already running for this coverage period (FR-007-07) */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RedeterminationStarted"];
+                };
+            };
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RedeterminationStarted"];
+                };
+            };
+            /** @description Not signed in */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Role not allowed */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Not found or not visible to the caller */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description No active coverage period with that ID */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description validation_failed */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description not_implemented: the feature has not landed */
+            501: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Temporal unavailable */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+        };
+    };
+    getApplicantHistory: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApplicantHistory"];
+                };
+            };
+            /** @description Not signed in */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Role not allowed */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Not found or not visible to the caller */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description validation_failed */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description not_implemented: the feature has not landed */
+            501: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+        };
+    };
+    listMyNotices: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["NoticeList"];
+                };
+            };
+            /** @description Not signed in */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Role not allowed */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Not found or not visible to the caller */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description validation_failed */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description not_implemented: the feature has not landed */
+            501: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+        };
+    };
+    getMyNotice: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                notice_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["NoticeView"];
+                };
+            };
+            /** @description Not signed in */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Role not allowed */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Not found or not visible to the caller */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description validation_failed */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description not_implemented: the feature has not landed */
+            501: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+        };
+    };
+    listMyOpenRequests: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["OpenRequestList"];
+                };
+            };
+            /** @description Not signed in */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Role not allowed */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Not found or not visible to the caller */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description validation_failed */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description not_implemented: the feature has not landed */
+            501: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+        };
+    };
+    respondToRequest: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                notice_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["RequestResponseBody"];
+            };
+        };
+        responses: {
+            /** @description Accepted and signalled to the case */
+            202: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Not signed in */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Role not allowed */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Not found or not visible to the caller */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Not allowed in the case's current state */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description validation_failed */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description not_implemented: the feature has not landed */
+            501: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Temporal unavailable */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+        };
+    };
+    getProgramMetrics: {
+        parameters: {
+            query: {
+                month: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MetricsReport"];
+                };
+            };
+            /** @description Not signed in */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Role not allowed */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Not found or not visible to the caller */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description validation_failed */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description not_implemented: the feature has not landed */
+            501: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
                 };
             };
         };

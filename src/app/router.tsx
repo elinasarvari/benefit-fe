@@ -8,6 +8,7 @@ import { CaseworkerHomePage } from '@/features/caseworker/CaseworkerHomePage'
 import { NotFoundPage } from '@/features/errors/NotFoundPage'
 import { RouteErrorPage } from '@/features/errors/RouteErrorPage'
 import { ForbiddenPage } from '@/features/errors/ForbiddenPage'
+import { PlaceholderPage } from '@/features/placeholders/PlaceholderPage'
 import { AppShell } from './AppShell'
 import { RequireRole } from './RequireRole'
 
@@ -28,6 +29,12 @@ export const routes: RouteObject[] = [
       children: [
         { path: 'caseworker', element: <CaseworkerHomePage /> },
         { path: 'caseworker/cases/:caseId', element: <CasePage /> },
+        // MVP contracts: placeholders until 007a and 008 land.
+        {
+          path: 'caseworker/households/:householdId',
+          element: <PlaceholderPage title="Household" />,
+        },
+        { path: 'caseworker/metrics', element: <PlaceholderPage title="Program metrics" /> },
       ],
     },
     {
@@ -36,6 +43,14 @@ export const routes: RouteObject[] = [
         { path: 'applicant', element: <ApplicantHomePage /> },
         { path: 'applicant/apply', element: <ApplyPage /> },
         { path: 'applicant/cases/:caseId', element: <ApplicantCasePage /> },
+        // MVP contracts: placeholders until 011 and 004a land.
+        { path: 'applicant/notices', element: <PlaceholderPage title="Notices" /> },
+        { path: 'applicant/notices/:noticeId', element: <PlaceholderPage title="Notice" /> },
+        {
+          path: 'applicant/requests/:noticeId',
+          element: <PlaceholderPage title="Respond to a request" />,
+        },
+        { path: 'applicant/history', element: <PlaceholderPage title="Decision history" /> },
       ],
     },
     { path: '*', element: <NotFoundPage /> },

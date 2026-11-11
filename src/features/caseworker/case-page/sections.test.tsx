@@ -18,4 +18,22 @@ describe('caseSections', () => {
       expect(section?.visible?.(caseDetail({ state }))).toBe(false)
     }
   })
+
+  it('MVP contracts: reserves the sections later features fill, hidden until they land', () => {
+    const ids = caseSections.map((entry) => entry.id)
+    expect(ids).toEqual([
+      'status',
+      'review-task',
+      'documents',
+      'determination',
+      'explanation',
+      'notices',
+      'demo-clock',
+      'history',
+    ])
+    for (const id of ['documents', 'explanation', 'notices', 'demo-clock']) {
+      const section = caseSections.find((entry) => entry.id === id)
+      expect(section?.visible?.(caseDetail({ state: 'decided' }))).toBe(false)
+    }
+  })
 })
