@@ -31,9 +31,16 @@ describe('caseSections', () => {
       'demo-clock',
       'history',
     ])
-    for (const id of ['documents', 'explanation', 'notices', 'demo-clock']) {
+    for (const id of ['explanation', 'notices', 'demo-clock']) {
       const section = caseSections.find((entry) => entry.id === id)
       expect(section?.visible?.(caseDetail({ state: 'decided' }))).toBe(false)
     }
+  })
+
+  it('FR-002-18: the documents section is built and always shown', () => {
+    const section = caseSections.find((entry) => entry.id === 'documents')
+
+    expect(section?.title).toBe('Documents')
+    expect(section?.visible).toBeUndefined()
   })
 })

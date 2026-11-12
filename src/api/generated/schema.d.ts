@@ -663,11 +663,20 @@ export interface components {
          * @enum {string}
          */
         CitizenshipStatus: "us_citizen" | "qualifying_immigrant" | "neither";
+        /** CorrectedValue */
+        CorrectedValue: {
+            /** Field Ref */
+            field_ref: string;
+            /** Value */
+            value: string | number | boolean | null;
+        };
         /**
          * Correction
          * @description A caseworker's correction of one entered detail (FR-002-19).
          */
         Correction: {
+            /** Action Id */
+            action_id?: string | null;
             /**
              * Corrected At
              * Format: date-time
@@ -1395,7 +1404,10 @@ export interface components {
              * Action
              * @enum {string}
              */
-            action: "approve_denial" | "override_to_approve";
+            action: "approve_denial" | "override_to_approve" | "correct_value" | "dismiss_finding";
+            corrected_value?: components["schemas"]["CorrectedValue"] | null;
+            /** Finding Id */
+            finding_id?: string | null;
             /** Reason */
             reason?: string | null;
             /**
@@ -1985,7 +1997,7 @@ export interface operations {
                     "application/json": components["schemas"]["ErrorEnvelope"];
                 };
             };
-            /** @description Role not allowed */
+            /** @description Role not allowed, or another household's case */
             403: {
                 headers: {
                     [name: string]: unknown;
@@ -2005,15 +2017,6 @@ export interface operations {
             };
             /** @description validation_failed */
             422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ErrorEnvelope"];
-                };
-            };
-            /** @description not_implemented: the feature has not landed */
-            501: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -2057,7 +2060,7 @@ export interface operations {
                     "application/json": components["schemas"]["ErrorEnvelope"];
                 };
             };
-            /** @description Role not allowed */
+            /** @description Role not allowed, or another household's case */
             403: {
                 headers: {
                     [name: string]: unknown;
@@ -2095,15 +2098,6 @@ export interface operations {
             };
             /** @description validation_failed */
             422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ErrorEnvelope"];
-                };
-            };
-            /** @description not_implemented: the feature has not landed */
-            501: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -2349,7 +2343,7 @@ export interface operations {
                     "application/json": components["schemas"]["ErrorEnvelope"];
                 };
             };
-            /** @description Role not allowed */
+            /** @description Role not allowed, or another household's case */
             403: {
                 headers: {
                     [name: string]: unknown;
@@ -2369,15 +2363,6 @@ export interface operations {
             };
             /** @description validation_failed */
             422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ErrorEnvelope"];
-                };
-            };
-            /** @description not_implemented: the feature has not landed */
-            501: {
                 headers: {
                     [name: string]: unknown;
                 };

@@ -2,7 +2,14 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Select } from '@/components/ui/select'
 import { Field, fieldId } from './Field'
-import { PAY_FREQUENCIES, type FormErrors, type JobValues, type PayFrequency } from './validation'
+import { PayStubFields } from './PayStubFields'
+import {
+  PAY_FREQUENCIES,
+  emptyStub,
+  type FormErrors,
+  type JobValues,
+  type PayFrequency,
+} from './validation'
 
 interface JobFieldsProps {
   path: string
@@ -70,6 +77,32 @@ export function JobFields({ path, label, job, errors, onChange, onRemove }: JobF
           />
         )}
       </Field>
+      {job.stub ? (
+        <PayStubFields
+          path={`${path}.stub`}
+          label={label}
+          employer={job.employer.trim()}
+          stub={job.stub}
+          errors={errors}
+          onChange={(stub) => {
+            onChange({ ...job, stub })
+          }}
+          onRemove={() => {
+            onChange({ ...job, stub: null })
+          }}
+        />
+      ) : (
+        <Button
+          type="button"
+          variant="outline"
+          size="sm"
+          onClick={() => {
+            onChange({ ...job, stub: emptyStub() })
+          }}
+        >
+          Add a pay stub for {label}
+        </Button>
+      )}
       <Button type="button" variant="outline" size="sm" onClick={onRemove}>
         Remove {label}
       </Button>

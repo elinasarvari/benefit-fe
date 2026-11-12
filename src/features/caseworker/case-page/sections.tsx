@@ -1,6 +1,7 @@
 import type { ComponentType } from 'react'
 import type { CaseDetail } from '@/api/cases'
 import { DeterminationSection } from './DeterminationSection'
+import { DocumentsSection } from './DocumentsSection'
 import { HistorySection } from './HistorySection'
 import { PendingSection } from './PendingSection'
 import { ReviewTaskSection } from './ReviewTaskSection'
@@ -23,8 +24,7 @@ export const caseSections: readonly CaseSection[] = [
     Component: ReviewTaskSection,
     visible: (detail) => detail.open_review_task !== null,
   },
-  // MVP contracts: hidden until 002 lands.
-  { id: 'documents', title: 'Documents', Component: PendingSection, visible: () => false },
+  { id: 'documents', title: 'Documents', Component: DocumentsSection },
   {
     id: 'determination',
     title: 'Determination',

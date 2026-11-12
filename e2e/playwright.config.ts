@@ -12,7 +12,7 @@ if (existsSync('.env')) {
 //   2. `<browser>-journeys`: everything that only reads a case or makes sure one exists;
 //   3. `<browser>`: the caseworker and supervisor decisions, which close cases or grant coverage.
 // Selecting `--project=<browser>` runs its earlier phases first, as dependencies.
-const APPLICATIONS = /apply-for-coverage\.spec\.ts/
+const APPLICATIONS = /(apply-for-coverage|verification-applicant)\.spec\.ts/
 const DECISIONS = /caseworker-approves-denial\.spec\.ts/
 const SETUP = /auth\.setup\.ts/
 

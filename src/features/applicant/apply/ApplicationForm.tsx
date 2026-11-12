@@ -7,16 +7,18 @@ import {
   MAX_MEMBERS,
   emptyMember,
   toApplicationForm,
+  toStubUploads,
   validateForm,
   type FormErrors,
   type FormValues,
+  type StubUpload,
 } from './validation'
 import type { components } from '@/api/generated/schema'
 
 interface ApplicationFormProps {
   values: FormValues
   onChange: (values: FormValues) => void
-  onSubmit: (form: components['schemas']['ApplicationForm']) => void
+  onSubmit: (form: components['schemas']['ApplicationForm'], stubs: StubUpload[]) => void
   pending: boolean
 }
 
@@ -28,7 +30,7 @@ export function ApplicationForm({ values, onChange, onSubmit, pending }: Applica
     const found = validateForm(values)
     setErrors(found)
     if (Object.keys(found).length === 0) {
-      onSubmit(toApplicationForm(values))
+      onSubmit(toApplicationForm(values), toStubUploads(values))
     }
   }
 
