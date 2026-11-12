@@ -3,9 +3,11 @@ import {
   emptyForm,
   emptyJob,
   emptyMember,
+  emptyStub,
   validateForm,
   type FormValues,
   type MemberValues,
+  type StubValues,
 } from './validation'
 
 function member(overrides: Partial<MemberValues> = {}): MemberValues {
@@ -50,6 +52,7 @@ describe('application form validation', () => {
       employer: 'Acme',
       pay_frequency: 'monthly' as const,
       declared_monthly_gross: '10',
+      stub: null,
     }
     const neither = validForm({ members: [member({ zero_income: false, jobs: [] })] })
     const both = validForm({ members: [member({ zero_income: true, jobs: [job] })] })
@@ -95,5 +98,40 @@ describe('application form validation', () => {
     const future = validForm({ members: [member({ date_of_birth: '2999-01-01' })] })
 
     expect(validateForm(future)['members.0.date_of_birth']).toMatch(/past/)
+  })
+
+  it('FR-002-21: every stub detail is checked, and a complete stub passes', () => {
+    const job = { ...emptyJob(), employer: 'Acme', pay_frequency: 'weekly' as const }
+    const file = new File(['%PDF'], 'a.pdf', { type: 'application/pdf' })
+    const complete = {
+      ...emptyStub(),
+      file,
+      employee_name: 'Synthetic Person',
+      frequency: 'weekly' as const,
+      gross_pay: '300.00',
+      pay_date: '2026-03-01',
+    }
+    const form = (stub: StubValues): FormValues =>
+      validForm({
+        members: [
+          member({
+            zero_income: false,
+            jobs: [{ ...job, declared_monthly_gross: '1300.00', stub }],
+          }),
+        ],
+      })
+
+    expect(validateForm(form(complete))).toEqual({})
+    const fields = ['employee_name', 'frequency', 'gross_pay', 'pay_date'] as const
+    for (const field of fields) {
+      const blank = { ...complete, [field]: '' }
+      expect(Object.keys(validateForm(form(blank)))).toEqual([`members.0.jobs.0.stub.${field}`])
+    }
+    expect(Object.keys(validateForm(form({ ...complete, file: null })))).toEqual([
+      'members.0.jobs.0.stub.file',
+    ])
+    expect(validateForm(form({ ...complete, gross_pay: '0' }))).toHaveProperty([
+      'members.0.jobs.0.stub.gross_pay',
+    ])
   })
 })

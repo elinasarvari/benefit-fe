@@ -76,7 +76,11 @@ test.describe('caseworker sees the determination', () => {
     expectNoSeriousA11yViolations,
   }) => {
     const applicant = await apiAs(playwright, 'applicant2')
-    const caseId = await ensureCase(applicant)
+    const caseId = await ensureOpenCase(applicant)
+    // The section renders only once the workflow has stored a determination (CI starts from a
+    // fresh seed, so a just-opened case would otherwise be checked before it has one).
+    await waitForReviewTask(applicant, caseId)
+    await newestDetermination(await apiAs(playwright, 'caseworker'), caseId)
     const section = new DeterminationSection(page)
     await section.open(caseId)
 

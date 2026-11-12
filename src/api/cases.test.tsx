@@ -91,4 +91,16 @@ describe('review action polling', () => {
 
     expect(reads).toBe(11)
   })
+
+  it('FR-002-19: when the review task clears the verification result is read again', async () => {
+    respondTo(`GET /api/v1/cases/${CASE_ID}`, () => jsonResponse(caseDetail()))
+    const { queryClient } = setup()
+    const spy = vi.spyOn(queryClient, 'invalidateQueries')
+
+    pollCaseUntilTaskCleared(queryClient, CASE_ID)
+    await vi.advanceTimersByTimeAsync(1000)
+
+    const keys = spy.mock.calls.map(([filters]) => filters?.queryKey)
+    expect(keys).toContainEqual(['case', CASE_ID, 'verification'])
+  })
 })

@@ -5,6 +5,7 @@ import {
   useQuery,
   useQueryClient,
 } from '@tanstack/react-query'
+import { caseVerificationKey } from './documents'
 import { apiClient } from './client'
 import type { components } from './generated/schema'
 
@@ -109,6 +110,8 @@ export function pollCaseUntilTaskCleared(queryClient: QueryClient, caseId: strin
         const detail = queryClient.getQueryData<CaseDetail>(caseKey(caseId))
         if (detail?.open_review_task == null || elapsed >= POLL_LIMIT_MS) {
           void queryClient.invalidateQueries({ queryKey: caseHistoryKey(caseId) })
+          // the check reruns in the workflow before the task clears: show its new result (FE-2)
+          void queryClient.invalidateQueries({ queryKey: caseVerificationKey(caseId) })
           return
         }
         tick()
